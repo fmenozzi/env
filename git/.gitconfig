@@ -1,0 +1,23 @@
+[alias]
+    co = checkout
+    cm = commit
+    br = branch
+    last = log -1 HEAD
+    unstash = stash pop
+    stashes = stash list
+    discard = checkout --
+    unstage = reset HEAD --
+    supdate = submodule update --remote --merge
+    spush = push --recursive-submodules=on-demand
+
+[core]
+    editor = nvim
+    excludesfile = /home/fmenozzi/.gitignore_global
+    pager = diff-so-fancy | less --tabs=4 -RFX
+
+[push]
+    default = simple
+
+[user]
+    name = Federico Menozzi
+    email = federicogmenozzi@gmail.com

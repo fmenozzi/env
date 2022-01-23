@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+import gitutils
+
+import argparse
+
+def main(push, stop_at):
+    if not gitutils.in_git_repo():
+        return
+
+    original_branch = gitutils.current_branch()
+
+    upstreams = gitutils.upstreams()
+
+    branch = str(original_branch)
+    while True:
+        if branch == stop_at:
+            break
+
+        upstream = upstreams[branch]
+
+        if not gitutils.is_remote(branch) and not upstream:
+            break
+
+        if gitutils.is_remote(upstream):
+            if push:
+                gitutils.git("push")
+            break
+
+        gitutils.git("checkout", [upstream, "-q"])
+        gitutils.git("merge", [branch])
+
+        branch = upstream
+
+    gitutils.git("checkout", [original_branch, "-q"])
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--push", help="Push final branch to origin, if applicable", action="store_true")
+    parser.add_argument("--stop-at", help="Branch where final merge occurs", action="store")
+    args = parser.parse_args()
+
+    main(args.push, args.stop_at)
