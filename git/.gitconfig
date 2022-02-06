@@ -15,6 +15,9 @@
     excludesfile = /home/fmenozzi/.gitignore_global
     pager = diff-so-fancy | less --tabs=4 -RFX
 
+[merge]
+    conflictStyle = diff3
+
 [push]
     default = simple
 
