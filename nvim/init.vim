@@ -53,6 +53,7 @@ source ~/.config/nvim/plugins/better-whitespace.vim
 source ~/.config/nvim/plugins/delimitmate.vim
 source ~/.config/nvim/plugins/gitgutter.vim
 source ~/.config/nvim/plugins/kitty.vim
+source ~/.config/nvim/plugins/nerdtree.vim
 source ~/.config/nvim/plugins/nord.vim
 
 call plug#end()
