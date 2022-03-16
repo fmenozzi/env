@@ -51,6 +51,7 @@ call plug#begin('~/.config/nvim/plugged')
 source ~/.config/nvim/plugins/airline.vim
 source ~/.config/nvim/plugins/better-whitespace.vim
 source ~/.config/nvim/plugins/delimitmate.vim
+source ~/.config/nvim/plugins/floaterm.vim
 source ~/.config/nvim/plugins/fzf.vim
 source ~/.config/nvim/plugins/gitgutter.vim
 source ~/.config/nvim/plugins/kitty.vim
