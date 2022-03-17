@@ -57,6 +57,7 @@ source ~/.config/nvim/plugins/gitgutter.vim
 source ~/.config/nvim/plugins/kitty.vim
 source ~/.config/nvim/plugins/nerdtree.vim
 source ~/.config/nvim/plugins/nord.vim
+source ~/.config/nvim/plugins/polyglot.vim
 
 call plug#end()
 
