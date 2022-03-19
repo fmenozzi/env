@@ -13,7 +13,17 @@
 [core]
     editor = nvim
     excludesfile = /home/fmenozzi/.gitignore_global
-    pager = diff-so-fancy | less --tabs=4 -RFX
+    pager = delta --syntax-theme="Nord" --diff-so-fancy
+
+[delta]
+    navigate = true
+    line-numbers = true
+
+[diff]
+    colorMoved = default
+
+[interactive]
+    diffFilter = delta --color-only
 
 [merge]
     conflictStyle = diff3
