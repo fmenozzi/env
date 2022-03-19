@@ -11,11 +11,8 @@
     ~/.config/kitty: kitty
     ~/.gitconfig: git/.gitconfig
     ~/.gitignore_global: git/.gitignore_global
-    /usr/local/bin/gitutils.py: git/custom-commands/gitutils.py
-    /usr/local/bin/git-new-feature-branch: git/custom-commands/git-new-feature-branch
-    /usr/local/bin/git-map-branches: git/custom-commands/git-map-branches
-    /usr/local/bin/git-upmerge: git/custom-commands/git-upmerge
     ~/.tmux.conf: tmux/.tmux.conf
+    ~/.bashrc: bash/bashrc.old
 
 - shell:
     - vim +PlugUpdate +qa
