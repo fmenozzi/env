@@ -15,6 +15,7 @@
     /usr/local/bin/git-new-feature-branch: git/custom-commands/git-new-feature-branch
     /usr/local/bin/git-map-branches: git/custom-commands/git-map-branches
     /usr/local/bin/git-upmerge: git/custom-commands/git-upmerge
+    ~/.tmux.conf: tmux/.tmux.conf
 
 - shell:
     - vim +PlugUpdate +qa
