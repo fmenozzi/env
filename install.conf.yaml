@@ -11,6 +11,8 @@
     ~/.config/kitty: kitty
     ~/.gitconfig: git/gitconfig
     ~/.gitignore_global: git/gitignore_global
+    ~/git-completion.bash: git/git-completion.bash
+    ~/git-prompt.sh: git/git-prompt.sh
     ~/.tmux.conf: tmux/tmux.conf
     ~/.bashrc: bash/bashrc.old
 
