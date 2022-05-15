@@ -253,3 +253,23 @@ tl() {
     done
     unset IFS
 }
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fdfind -t d . $HOME"
+
+alias o='vim $(fzf)'
+
+# THINGS TO CONSIDER:
+#   - Maybe we could change the above alias to search over home directory by default?
+#       - or maybe we replace it with something like alt-o at the kitty.config level
+#           - MIGHT require a kitten script?
+#   - Maybe we could include an extra vim-level leader-based alias for home directory find?
+#       - e.g. <leader>F for home-directory search (no directories)
+#       - or else we just change the fzf command for <leader>f to search through home without
+#         directories, instead of adding a separate alias
+#   - Allow searching hidden files/directories for some of these?
+#       - e.g. can't cd into save_data with above alt-c, since it's in ~/.local/
+#   - Anyway to make Ctrl-R automatically hit Enter for us after selecting command?
+#       - is that even desirable?
