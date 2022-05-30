@@ -4,7 +4,7 @@ import os
 # Run single git command
 def git(cmd, args=[], stdin=None, stderr=None, shell=False, universal_newlines=False):
     try:
-        return subprocess.check_output(["git", cmd] + args, stdin=stdin, stderr=stderr, shell=shell, universal_newlines=universal_newlines)
+        return subprocess.check_output(["git", cmd] + args, stdin=stdin, stderr=stderr, shell=shell, universal_newlines=universal_newlines).decode("utf-8")
     except:
         return None
 
@@ -102,16 +102,16 @@ def is_remote(branch):
 if __name__ == "__main__":
     tab = "    "
 
-    print "BRANCHES"
+    print("BRANCHES")
     for branch in branches():
-        print tab, branch
-    print
+        print(tab, branch)
+    print()
 
-    print "REMOTES"
+    print("REMOTES")
     for remote in remotes():
-        print tab, remote
-    print
+        print(tab, remote)
+    print()
 
-    print "UPSTREAMS"
+    print("UPSTREAMS")
     for branch, upstream in upstreams().iteritems():
-        print tab, branch, upstream
+        print(tab, branch, upstream)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import gitutils
 
@@ -9,7 +9,7 @@ NO_UPSTREAM = "{NO_UPSTREAM}"
 
 def colorprint(text, color, bold, no_color):
     if not sys.stdout.isatty() or no_color:
-        print text
+        print(text)
         return
 
     attr = []
@@ -25,7 +25,7 @@ def colorprint(text, color, bold, no_color):
     if bold:
         attr.append("1")
 
-    print "\x1b[%sm%s\x1b[0m" % (";".join(attr), text)
+    print("\x1b[%sm%s\x1b[0m" % (";".join(attr), text))
 
 def visit(branch, indent, all_branches, upstreams, current_branch, no_color):
     if branch == current_branch:
@@ -57,7 +57,7 @@ def main(no_color):
     rootlist = gitutils.remotes()
 
     # Add local roots
-    num_local_roots = sum(map(lambda b: b not in rootlist and not upstreams[b], all_branches))
+    num_local_roots = sum([b not in rootlist and not upstreams[b] for b in all_branches])
     if num_local_roots > 0:
         rootlist.append(NO_UPSTREAM)
 
