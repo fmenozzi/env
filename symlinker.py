@@ -66,7 +66,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('command', choices=['link', 'clean'], help='Command to run')
-    parser.add_argument('-c', '--config', help='Config file path', default='links.ini')
+    parser.add_argument('config', help='Config file path')
     args = parser.parse_args()
 
     main(args)
