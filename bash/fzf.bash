@@ -1,5 +1,3 @@
-DOTFILES="/home/fmenozzi/data/dotfiles/"
-
 # Setup fzf
 # ---------
 if [[ ! "$PATH" == *$DOTFILES/nvim/plugged/fzf/bin* ]]; then

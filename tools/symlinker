@@ -6,8 +6,6 @@ import os
 import shutil
 import subprocess
 
-CWD = os.path.dirname(os.path.realpath(__file__))
-
 # Read symlinks config file from disk. We allow for sections to contain only
 # values in order to allow for the [shell] section to contain a simple list of
 # shell commands to run post-link. We also change the option transform function
@@ -20,14 +18,17 @@ def get_config(config_path):
 
     return config
 
-def link(config):
+def link(config_path):
+    config = get_config(config_path)
+    config_dir_path = os.path.dirname(os.path.abspath(config_path))
+
     # Make the actual symlinks. Existing symlinks are rewritten if present.
     if config['links']:
         print('Creating links...')
         symlinks = config['links']
         for symlink in symlinks:
             src = os.path.expanduser(symlink).strip()
-            dst = os.path.join(CWD, symlinks[symlink]).strip()
+            dst = os.path.join(config_dir_path, symlinks[symlink]).strip()
             if os.path.isdir(src):
                 # If an existing non-symlink directory already exists for the
                 # source, remove it first to avoid creating the symlink inside
@@ -44,7 +45,9 @@ def link(config):
             print('   ', cmd)
             subprocess.call(cmd.split())
 
-def clean(config):
+def clean(config_path):
+    config = get_config(config_path)
+
     if config['links']:
         print('Cleaning links...')
         for symlink in config['links']:
@@ -55,13 +58,13 @@ def clean(config):
             subprocess.call(['unlink', os.path.expanduser(symlink).strip()])
 
 def main(args):
-    config = get_config(args.config)
+    config_path = args.config
 
     if args.command == 'link':
-        clean(config)
-        link(config)
+        clean(config_path)
+        link(config_path)
     elif args.command == 'clean':
-        clean(config)
+        clean(config_path)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
