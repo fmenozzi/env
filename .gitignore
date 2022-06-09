@@ -1,4 +1,4 @@
 TODO
-nvim/plugged
-git/custom-commands/gitutils.pyc
-git/custom-commands/__pycache__
+dotfiles/nvim/plugged
+dotfiles/git/custom-commands/gitutils.pyc
+dotfiles/git/custom-commands/__pycache__
