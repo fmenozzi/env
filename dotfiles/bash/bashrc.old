@@ -211,8 +211,9 @@ export PS1="\[$bldwht\]\W\[$bldgrn\]\$(__git_ps1)\[$bldblu\] ❯ $reset"
 
 export GOPATH=~/go
 
-export DOTFILES=~/data/env/dotfiles
-export PATH=$PATH:$DOTFILES/git/custom-commands:$DOTFILES/tools:~/.cargo/bin
+export ENV_PATH=~/data/env
+export DOTFILES_PATH=~/data/env/dotfiles
+export PATH=$PATH:$DOTFILES_PATH/git/custom-commands:$ENV_PATH/tools:~/.cargo/bin
 
 export RUST_SRC_PATH=~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/
 
