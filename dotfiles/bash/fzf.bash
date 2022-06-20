@@ -11,3 +11,6 @@ fi
 # Key bindings
 # ------------
 source "$DOTFILES_PATH/nvim/plugged/fzf/shell/key-bindings.bash"
+
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fdfind -t d . $HOME"

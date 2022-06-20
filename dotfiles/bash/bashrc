@@ -1,0 +1,26 @@
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+set -o vi
+
+# Check the window size after each command and update values of LINES and
+# COLUMNS if necessary.
+shopt -s checkwinsize
+
+# Make less more friendly for non-text input files.
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+export ENV_PATH=~/data/env
+export DOTFILES_PATH=$ENV_PATH/dotfiles
+
+export BASH_PATH=$DOTFILES_PATH/bash
+source $BASH_PATH/aliases.bash
+source $BASH_PATH/completions.bash
+source $BASH_PATH/fzf.bash
+source $BASH_PATH/history.bash
+source $BASH_PATH/paths.bash
+source $BASH_PATH/prompt.bash
+source $BASH_PATH/tmux.bash
