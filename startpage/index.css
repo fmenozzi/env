@@ -1,0 +1,73 @@
+:root {
+    --color-bg: #2e3440;          /* Nord0 */
+    --color-fg: #d8dee9;          /* Nord4 */
+    --color-link: #88c0d0;        /* Nord8 */
+    --color-link-hover: #eceff4;  /* Nord6 */
+}
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: "Ubuntu Mono";
+  font-weight: 300;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  grid-area: right;
+  height: 50%;
+  width: 100%;
+}
+
+.banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 40px;
+  padding-top: 60px;
+}
+
+.category {
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+}
+
+.bookmarks {
+  display: flex;
+  justify-content: center;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.title {
+  font-size: 20px;
+}
+
+li {
+  font-size: 16px;
+  list-style-type: none;
+  padding: 5px
+}
+
+a:link {
+  text-decoration: none;
+  color: var(--color-link);
+}
+
+a:visited {
+  color: var(--color-link);
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
