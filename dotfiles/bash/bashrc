@@ -13,7 +13,7 @@ shopt -s checkwinsize
 # Make less more friendly for non-text input files.
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-export ENV_PATH=~/data/env
+export ENV_PATH=~/fm/env
 export DOTFILES_PATH=$ENV_PATH/dotfiles
 
 export BASH_PATH=$DOTFILES_PATH/bash
