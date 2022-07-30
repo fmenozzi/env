@@ -4,6 +4,9 @@
 XDG_OPEN_MIME_TYPES=(
     'application/pdf'
     'text/html'
+    'image/jpeg'
+    'image/png'
+    'image/gif'
 )
 
 # Get the path to the file/directory to be opened.
