@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# These mime types will be opened via xdg-open instead of vim.
+XDG_OPEN_MIME_TYPES=(
+    'application/pdf'
+    'text/html'
+)
+
+# Get the path to the file/directory to be opened.
+OPEN_PATH=$(fdfind . ~ | fzf --preview='cat {}')
+
+# If the path is empty (e.g. fzf exited early), exit early.
+if [ -z $OPEN_PATH ]; then
+    exit 0
+fi
+
+if [ -d $OPEN_PATH ]; then
+    # Open directories via graphical file explorer.
+    xdg-open $OPEN_PATH
+else
+    # For files, check mime type to see whether we should open it via xdg-open.
+    OPEN_PATH_MIME_TYPE=$(xdg-mime query filetype $OPEN_PATH)
+    for ((i=0;i<${#XDG_OPEN_MIME_TYPES[@]};i++)); do
+        if [ $OPEN_PATH_MIME_TYPE = ${XDG_OPEN_MIME_TYPES[${i}]} ]; then
+            xdg-open $OPEN_PATH
+            exit 0
+        fi
+    done
+
+    # If not an xdg-open mime type, just open in vim by default.
+    nvim $OPEN_PATH
+fi
