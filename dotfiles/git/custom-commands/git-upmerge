@@ -8,11 +8,9 @@ def main(push, stop_at):
     if not gitutils.in_git_repo():
         return
 
-    original_branch = gitutils.current_branch()
-
     upstreams = gitutils.upstreams()
 
-    branch = str(original_branch)
+    branch = str(gitutils.current_branch())
     while True:
         if branch == stop_at:
             break
@@ -32,7 +30,8 @@ def main(push, stop_at):
 
         branch = upstream
 
-    gitutils.git("checkout", [original_branch, "-q"])
+    # Checkout branch we stopped at.
+    gitutils.git("checkout", [branch, "-q"])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
