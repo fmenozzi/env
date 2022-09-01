@@ -40,4 +40,4 @@ export GIT_PS1_SHOWSTASHSTATE=1
 export GIT_PS1_SHOWUNTRACKEDFILES=1
 # '\W' adds the name of the current directory
 # '\$(__git_ps1)' adds git-related stuff
-export PS1="\[$bldwht\]\W\[$bldgrn\]\$(__git_ps1)\[$bldblu\] ❯ $txtrst"
+export PS1="\[$bldwht\]\W\[$bldgrn\]\$(__git_ps1)\[$bldblu\] ❯ \[$txtrst\]"
