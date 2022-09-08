@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+WIKI_PATH=/usr/share/doc/arch-wiki/html/en/
+
+fd -t f . "$WIKI_PATH" | fzf --height=12 | xargs -ro xdg-open
