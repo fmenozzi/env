@@ -13,6 +13,7 @@ man-db
 mdcat
 neofetch
 neovim
+pandoc
 python
 python-docs
 ripgrep
