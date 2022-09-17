@@ -8,6 +8,11 @@ XDG_OPEN_MIME_TYPES=(
     'image/jpeg'
     'image/png'
     'image/gif'
+    'audio/mpeg'
+    'audio/x-wav'
+    'audio/x-vorbis+ogg'
+    'video/mp4'
+    'video/webm'
 )
 
 # If argument is specified, interpret as starting directory. Default to home
@@ -18,8 +23,6 @@ if [ -n "$1" ]; then
 fi
 
 # Get the path to the file/directory to be opened.
-# TODO: arch xdg-open for directories just opens in a separate terminal
-#   - need to set mime type for directories?
 OPEN_PATH=$(fd . "$START_DIR" | fzf --preview='bat --color=always {}')
 
 # If the path is empty (e.g. fzf exited early), exit early.
