@@ -2,4 +2,4 @@
 
 reminder="$1"
 shift
-echo "notify-send -i appointment-soon -u critical 'Reminder' \"$reminder\"" | at $@
+echo "notify-send -i appointment-soon -u critical 'Reminder' \"$reminder\"" | at "$@"
