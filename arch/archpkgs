@@ -42,6 +42,7 @@ rebuild-detector
 reflector
 restic
 ripgrep
+rust-analyzer
 rustup
 sd
 signal-desktop
