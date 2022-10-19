@@ -19,6 +19,7 @@ pacman-contrib
 pandoc
 python
 python-docs
+reflector
 ripgrep
 rustup
 signal-desktop
