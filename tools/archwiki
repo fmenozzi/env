@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
 WIKI_PATH=/usr/share/doc/arch-wiki/html/en/
-
-fd -t f . "$WIKI_PATH" | fzf --height=12 | xargs -ro xdg-open
+fd -t f . "$WIKI_PATH" |
+    sed -e "s#$WIKI_PATH##g" -e "s/.html//g" |
+    fzf --height=12 |
+    while read line; do echo "$WIKI_PATH${line}.html"; done |
+    xargs -ro xdg-open
