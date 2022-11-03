@@ -21,6 +21,7 @@ pandoc
 python
 python-docs
 reflector
+restic
 ripgrep
 rustup
 signal-desktop
