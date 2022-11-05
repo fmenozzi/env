@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+DEVICE=/dev/sdb
+DEVICE_NAME=AvaBackup
+MOUNT_DIR=/mnt/ava-backup
+SRC_DIR=/home/fed/fm
+DST_DIR=$MOUNT_DIR/backups/automatic/restic
+
+# Unlock LUKS device and mount.
+sudo cryptsetup open $DEVICE $DEVICE_NAME
+sudo mkdir -p $MOUNT_DIR
+sudo mount /dev/mapper/$DEVICE_NAME $MOUNT_DIR
+
+# Backup data dir via restic.
+restic -r $DST_DIR --verbose backup $SRC_DIR
+
+# Unmount and lock LUKS device.
+sudo umount $MOUNT_DIR
+sudo cryptsetup close $DEVICE_NAME
