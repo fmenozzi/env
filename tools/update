@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-sudo pacman -Syu
+paru
 
 nvim +PlugUpdate
