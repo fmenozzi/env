@@ -5,6 +5,7 @@ bat
 dust
 fd
 firefox
+fuse2
 fzf
 git
 git-delta
@@ -20,6 +21,7 @@ pacman-contrib
 pandoc
 python
 python-docs
+rclone
 rebuild-detector
 reflector
 restic
