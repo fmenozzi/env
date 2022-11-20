@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BACKUP_INFO=/home/fed/backup-info
+BACKUP_INFO=/home/fed/.backup-info
 DEVICE=/dev/sdb
 DEVICE_NAME=AvaBackup
 MOUNT_DIR=/mnt/ava-backup
