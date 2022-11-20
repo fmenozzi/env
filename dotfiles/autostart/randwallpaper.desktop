@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=RandWallpaper
+GenericName=Choose a random wallpaper on startup
+Exec=/home/fed/fm/env/tools/randwallpaper /home/fed/fm/images/wallpapers
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
