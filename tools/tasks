@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+
+import argparse
+import sqlite3
+
+DB_PATH = '/home/fed/fm/tasks.sqlite'
+DEFAULT_PRIORITY = 2;
+
+def create_or_open_db():
+    con = sqlite3.connect(DB_PATH)
+    cur = con.cursor()
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS Tasks (
+            id INTEGER PRIMARY KEY,
+            task TEXT,
+            priority INTEGER
+        );
+    ''')
+    con.commit()
+    return con, cur
+
+def list_tasks(args):
+    priority_to_show = args.p if 'p' in args else None
+    con, cur = create_or_open_db()
+    res = cur.execute('SELECT * FROM Tasks;')
+    rows = res.fetchall()
+    con.close()
+    if not rows:
+        return
+    rows = [row for row in rows if priority_to_show == None or row[2] == priority_to_show]
+    rows.sort(key=lambda row: row[2])
+    max_task_text_width = max([len(task) for (_, task, _) in rows])
+    fill_dashes = '-' * (max_task_text_width + 2)
+    print('+----+----------+' + fill_dashes + '+')
+    print(f'| ID | Priority | {"Task":^{max_task_text_width}} |')
+    print('+----+----------+' + fill_dashes + '+')
+    for id, task, priority in rows:
+        priority_str = 'p' + str(priority)
+        print(f'| {id:2} | {priority_str:^8} | {task:{max_task_text_width}} |')
+        print('+----+----------+' + fill_dashes + '+')
+
+def add_task(args):
+    task = args.task
+    priority = args.p if 'p' in args and args.p != None else DEFAULT_PRIORITY
+    con, cur = create_or_open_db()
+    query = 'INSERT INTO Tasks(rowid, task, priority) VALUES (NULL, ?, ?);'
+    res = cur.execute(query, (task, priority))
+    con.commit()
+    con.close()
+
+def task_exists(task_id):
+    con, cur = create_or_open_db()
+    res = cur.execute('SELECT COUNT(*) FROM Tasks WHERE id = ?;', (task_id,))
+    count, = res.fetchone()
+    con.close()
+    return count == 1
+
+def remove_task(args):
+    task_id = args.id
+    if not task_exists(task_id):
+        print(f'Task id {task_id} not found')
+        return
+    con, cur = create_or_open_db()
+    res = cur.execute('DELETE FROM Tasks WHERE id = ?;', (task_id,))
+    con.commit()
+    con.close()
+
+def update_task(args):
+    task_id = args.id
+    task = args.task if 'task' in args else None
+    priority = args.p if 'p' in args else None
+    if not task_exists(task_id):
+        print(f'Task id {task_id} not found')
+        return
+    if not task and priority == None:
+        print(f'Must update at least one of task or priority')
+        return
+    con, cur = create_or_open_db()
+    if task and priority != None:
+        query = 'UPDATE Tasks SET task = ?, priority = ? WHERE id = ?;'
+        data = (args.task, args.p, task_id)
+    elif task and priority == None:
+        query = 'UPDATE Tasks SET task = ? WHERE id = ?;'
+        data = (args.task, task_id)
+    else:
+        query = 'UPDATE Tasks SET priority = ? WHERE id = ?;'
+        data = (args.p, task_id)
+    cur.execute(query, data)
+    con.commit()
+    con.close()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.set_defaults(func=list_tasks)
+    subparsers = parser.add_subparsers()
+
+    parser_list = subparsers.add_parser('list', help='list tasks')
+    parser_list.add_argument('-p', type=int, help='priority to filter by')
+    parser_list.set_defaults(func=list_tasks)
+
+    parser_add = subparsers.add_parser('add', help='add new task')
+    parser_add.add_argument('task', help='task string')
+    parser_add.add_argument('-p', type=int, help='task priority')
+    parser_add.set_defaults(func=add_task)
+
+    parser_remove = subparsers.add_parser('remove', help='remove task')
+    parser_remove.add_argument('id', type=int, help='task id to remove')
+    parser_remove.set_defaults(func=remove_task)
+
+    parser_update = subparsers.add_parser('update', help='update task')
+    parser_update.add_argument('id', type=int, help='task id to update')
+    parser_update.add_argument('task', nargs='?', help='new task string')
+    parser_update.add_argument('-p', type=int, help='new task priority')
+    parser_update.set_defaults(func=update_task)
+
+    args = parser.parse_args()
+    args.func(args)
