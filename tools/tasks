@@ -30,14 +30,18 @@ def list_tasks(args):
     rows = [row for row in rows if priority_to_show == None or row[2] == priority_to_show]
     rows.sort(key=lambda row: row[2])
     max_task_text_width = max([len(task) for (_, task, _) in rows])
-    fill_dashes = '-' * (max_task_text_width + 2)
-    print('+----+----------+' + fill_dashes + '+')
-    print(f'| ID | Priority | {"Task":^{max_task_text_width}} |')
-    print('+----+----------+' + fill_dashes + '+')
-    for id, task, priority in rows:
+    fill_dashes = '─' * (max_task_text_width + 2)
+    print('┌────┬──────────┬' + fill_dashes + '┐')
+    print(f'│ ID │ Priority │ {"Task":^{max_task_text_width}} │')
+    print('├────┼──────────┼' + fill_dashes + '┤')
+    for idx, row in enumerate(rows):
+        id, task, priority = row
         priority_str = 'p' + str(priority)
-        print(f'| {id:2} | {priority_str:^8} | {task:{max_task_text_width}} |')
-        print('+----+----------+' + fill_dashes + '+')
+        print(f'│ {id:2} │ {priority_str:^8} │ {task:{max_task_text_width}} │')
+        if idx == len(rows) - 1:
+            print('└────┴──────────┴' + fill_dashes + '┘')
+        else:
+            print('├────┼──────────┼' + fill_dashes + '┤')
 
 def add_task(args):
     task = args.task
