@@ -8,6 +8,8 @@ XDG_OPEN_MIME_TYPES=(
     'image/jpeg'
     'image/png'
     'image/gif'
+    'image/svg'
+    'image/svg+xml'
     'audio/mpeg'
     'audio/x-wav'
     'audio/x-vorbis+ogg'
