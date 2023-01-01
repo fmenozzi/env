@@ -20,6 +20,7 @@ alias la='ls -A'
 alias l='ls -CF'
 alias lc='wc -l'
 alias o='vim $(fzf)'
+alias c='clear'
 
 # Extract from various archive types
 extract() {
