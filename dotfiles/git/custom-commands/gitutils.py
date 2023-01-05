@@ -29,9 +29,6 @@ def current_branch():
 def upstream(branch=None):
     tmp = current_branch()
 
-    cmd = "rev-parse"
-    args = ["--abbrev-ref", "--symbolic-full-name", "@{upstream}"]
-
     if branch:
         git("checkout", [branch, "-q"])
 
