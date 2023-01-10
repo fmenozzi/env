@@ -27,6 +27,12 @@ def colorprint(text, color, bold, no_color):
 
     print("\x1b[%sm%s\x1b[0m" % (";".join(attr), text))
 
+def get_children(branch, all_branches, upstreams):
+    children = [b for b in all_branches if upstreams[b] == branch]
+    if branch == NO_UPSTREAM:
+        children += [b for b in all_branches if not gitutils.is_remote(b) and not upstreams[b]]
+    return children
+
 def visit(branch, indent, all_branches, upstreams, current_branch, no_color):
     if branch == current_branch:
         colorprint("%s%s *" % (indent, branch), "cyan", True, no_color)
@@ -37,14 +43,18 @@ def visit(branch, indent, all_branches, upstreams, current_branch, no_color):
     else:
         colorprint("%s%s" % (indent, branch), "green", False, no_color)
 
-    children = [b for b in all_branches if upstreams[b] == branch]
-    if branch == NO_UPSTREAM:
-        children += [b for b in all_branches if not gitutils.is_remote(b) and not upstreams[b]]
-
-    for child in children:
+    for child in get_children(branch, all_branches, upstreams):
         visit(child, indent + "  ", all_branches, upstreams, current_branch, no_color)
 
-def main(no_color):
+def visit_rebase(branch, all_branches, upstreams, start):
+    if branch != start:
+        gitutils.git("checkout", [branch])
+        gitutils.git("pull", ["--rebase"])
+
+    for child in get_children(branch, all_branches, upstreams):
+        visit_rebase(child, all_branches, upstreams, start)
+
+def main(args):
     if not gitutils.in_git_repo():
         return
 
@@ -52,6 +62,11 @@ def main(no_color):
 
     all_branches = set(upstreams.keys())
     current_branch = gitutils.current_branch()
+
+    if args.rebase:
+        visit_rebase(current_branch, all_branches, upstreams, current_branch)
+        gitutils.git("checkout", [current_branch])
+        return
 
     # Get remote roots
     rootlist = gitutils.remotes()
@@ -62,11 +77,12 @@ def main(no_color):
         rootlist.append(NO_UPSTREAM)
 
     for root in rootlist:
-        visit(root, "", all_branches, upstreams, current_branch, no_color)
+        visit(root, "", all_branches, upstreams, current_branch, args.no_color)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-color", help="Turn off colored output", action="store_true")
+    parser.add_argument("--rebase", help="Rebase children", action="store_true")
     args = parser.parse_args()
 
-    main(args.no_color)
+    main(args)
