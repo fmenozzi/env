@@ -4,11 +4,13 @@ import argparse
 import os
 import random
 
+DEFAULT_WALLPAPER_DIR = '/home/fed/fm/images/wallpapers'
+
 parser = argparse.ArgumentParser()
 parser.add_argument('directory', nargs='?', help='wallpaper directory')
 args = parser.parse_args()
 
-start = args.directory if args.directory else os.getcwd()
+start = args.directory if args.directory else DEFAULT_WALLPAPER_DIR
 files = [f.path for f in os.scandir(start) if f.is_file()]
 wallpaper = random.choice(files)
 
