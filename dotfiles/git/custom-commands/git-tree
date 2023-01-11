@@ -54,6 +54,13 @@ def visit_rebase(branch, all_branches, upstreams, start):
     for child in get_children(branch, all_branches, upstreams):
         visit_rebase(child, all_branches, upstreams, start)
 
+def visit_clean(branch, all_branches, upstreams, start):
+    for child in get_children(branch, all_branches, upstreams):
+        visit_clean(child, all_branches, upstreams, start)
+
+    if branch != start:
+        gitutils.git("branch", ["-d", branch])
+
 def main(args):
     if not gitutils.in_git_repo():
         return
@@ -66,6 +73,10 @@ def main(args):
     if args.rebase:
         visit_rebase(current_branch, all_branches, upstreams, current_branch)
         gitutils.git("checkout", [current_branch])
+        return
+
+    if args.clean:
+        visit_clean(current_branch, all_branches, upstreams, current_branch)
         return
 
     # Get remote roots
@@ -83,6 +94,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-color", help="Turn off colored output", action="store_true")
     parser.add_argument("--rebase", help="Rebase children", action="store_true")
+    parser.add_argument("--clean", help="Delete merged children", action="store_true")
     args = parser.parse_args()
 
     main(args)
