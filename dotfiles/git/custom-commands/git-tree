@@ -5,7 +5,7 @@ import gitutils
 import argparse
 import sys
 
-NO_UPSTREAM = "{NO_UPSTREAM}"
+NO_UPSTREAM = '{NO_UPSTREAM}'
 
 def colorprint(text, color, bold, no_color):
     if not sys.stdout.isatty() or no_color:
@@ -13,19 +13,19 @@ def colorprint(text, color, bold, no_color):
         return
 
     attr = []
-    if color == "red":
-        attr.append("31")
-    elif color == "cyan":
-        attr.append("36")
-    elif color == "purple":
-        attr.append("35")
+    if color == 'red':
+        attr.append('31')
+    elif color == 'cyan':
+        attr.append('36')
+    elif color == 'purple':
+        attr.append('35')
     else: # Default to green
-        attr.append("32")
+        attr.append('32')
 
     if bold:
-        attr.append("1")
+        attr.append('1')
 
-    print("\x1b[%sm%s\x1b[0m" % (";".join(attr), text))
+    print('\x1b[%sm%s\x1b[0m' % (';'.join(attr), text))
 
 def get_children(branch, all_branches, upstreams):
     children = [b for b in all_branches if upstreams[b] == branch]
@@ -35,21 +35,21 @@ def get_children(branch, all_branches, upstreams):
 
 def visit(branch, indent, all_branches, upstreams, current_branch, no_color):
     if branch == current_branch:
-        colorprint("%s%s *" % (indent, branch), "cyan", True, no_color)
+        colorprint('%s%s *' % (indent, branch), 'cyan', True, no_color)
     elif branch == NO_UPSTREAM:
-        colorprint("%s%s" % (indent, branch), "purple", False, no_color)
+        colorprint('%s%s' % (indent, branch), 'purple', False, no_color)
     elif gitutils.is_remote(branch) and not upstreams[branch]:
-        colorprint("%s%s" % (indent, branch[8:]), "red", True, no_color)
+        colorprint('%s%s' % (indent, branch[8:]), 'red', True, no_color)
     else:
-        colorprint("%s%s" % (indent, branch), "green", False, no_color)
+        colorprint('%s%s' % (indent, branch), 'green', False, no_color)
 
     for child in get_children(branch, all_branches, upstreams):
-        visit(child, indent + "  ", all_branches, upstreams, current_branch, no_color)
+        visit(child, indent + '  ', all_branches, upstreams, current_branch, no_color)
 
 def visit_rebase(branch, all_branches, upstreams, start):
     if branch != start:
-        gitutils.git("checkout", [branch])
-        gitutils.git("pull", ["--rebase"])
+        gitutils.git('checkout', [branch])
+        gitutils.git('pull', ['--rebase'])
 
     for child in get_children(branch, all_branches, upstreams):
         visit_rebase(child, all_branches, upstreams, start)
@@ -59,7 +59,7 @@ def visit_clean(branch, all_branches, upstreams, start):
         visit_clean(child, all_branches, upstreams, start)
 
     if branch != start:
-        gitutils.git("branch", ["-d", branch])
+        gitutils.git('branch', ['-d', branch])
 
 def main(args):
     if not gitutils.in_git_repo():
@@ -72,7 +72,7 @@ def main(args):
 
     if args.rebase:
         visit_rebase(current_branch, all_branches, upstreams, current_branch)
-        gitutils.git("checkout", [current_branch])
+        gitutils.git('checkout', [current_branch])
         return
 
     if args.clean:
@@ -88,13 +88,13 @@ def main(args):
         rootlist.append(NO_UPSTREAM)
 
     for root in rootlist:
-        visit(root, "", all_branches, upstreams, current_branch, args.no_color)
+        visit(root, '', all_branches, upstreams, current_branch, args.no_color)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--no-color", help="Turn off colored output", action="store_true")
-    parser.add_argument("--rebase", help="Rebase children", action="store_true")
-    parser.add_argument("--clean", help="Delete merged children", action="store_true")
+    parser.add_argument('--no-color', help='Turn off colored output', action='store_true')
+    parser.add_argument('--rebase', help='Rebase children', action='store_true')
+    parser.add_argument('--clean', help='Delete merged children', action='store_true')
     args = parser.parse_args()
 
     main(args)
