@@ -101,8 +101,9 @@ class GitTree():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--no-color', help='Turn off colored output', action='store_true')
-    parser.add_argument('--rebase', help='Rebase children', action='store_true')
-    parser.add_argument('--clean', help='Delete merged children', action='store_true')
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument('--rebase', help='Rebase children', action='store_true')
+    group.add_argument('--clean', help='Delete merged children', action='store_true')
     args = parser.parse_args()
 
     tree = GitTree(args)
