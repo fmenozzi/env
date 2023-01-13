@@ -7,88 +7,96 @@ import sys
 
 NO_UPSTREAM = '{NO_UPSTREAM}'
 
-def colorprint(text, color, bold, no_color):
-    if not sys.stdout.isatty() or no_color:
-        print(text)
-        return
+class GitTree():
+    def __init__(self, args):
+        self.upstreams = gitutils.upstreams()
+        self.all_branches = set(self.upstreams.keys())
+        self.starting_branch = gitutils.current_branch()
+        self.no_color = args.no_color
 
-    attr = []
-    if color == 'red':
-        attr.append('31')
-    elif color == 'cyan':
-        attr.append('36')
-    elif color == 'purple':
-        attr.append('35')
-    else: # Default to green
-        attr.append('32')
+        self.action = 'tree'
+        if args.rebase:
+            self.action = 'rebase'
+        elif args.clean:
+            self.action = 'clean'
 
-    if bold:
-        attr.append('1')
+    def run(self):
+        if not gitutils.in_git_repo():
+            return
 
-    print('\x1b[%sm%s\x1b[0m' % (';'.join(attr), text))
+        if self.action == 'rebase':
+            self.visit_rebase(self.starting_branch)
+            gitutils.git('checkout', [self.starting_branch])
+            return
 
-def get_children(branch, all_branches, upstreams):
-    children = [b for b in all_branches if upstreams[b] == branch]
-    if branch == NO_UPSTREAM:
-        children += [b for b in all_branches if not gitutils.is_remote(b) and not upstreams[b]]
-    return children
+        if self.action == 'clean':
+            self.visit_clean(self.starting_branch)
+            return
 
-def visit(branch, indent, all_branches, upstreams, current_branch, no_color):
-    if branch == current_branch:
-        colorprint('%s%s *' % (indent, branch), 'cyan', True, no_color)
-    elif branch == NO_UPSTREAM:
-        colorprint('%s%s' % (indent, branch), 'purple', False, no_color)
-    elif gitutils.is_remote(branch) and not upstreams[branch]:
-        colorprint('%s%s' % (indent, branch[8:]), 'red', True, no_color)
-    else:
-        colorprint('%s%s' % (indent, branch), 'green', False, no_color)
+        # Get remote roots
+        rootlist = gitutils.remotes()
 
-    for child in get_children(branch, all_branches, upstreams):
-        visit(child, indent + '  ', all_branches, upstreams, current_branch, no_color)
+        # Add local roots
+        num_local_roots = sum([b not in rootlist and not self.upstreams[b] for b in self.all_branches])
+        if num_local_roots > 0:
+            rootlist.append(NO_UPSTREAM)
 
-def visit_rebase(branch, all_branches, upstreams, start):
-    if branch != start:
-        gitutils.git('checkout', [branch])
-        gitutils.git('pull', ['--rebase'])
+        for root in rootlist:
+            self.visit_tree(root, '')
 
-    for child in get_children(branch, all_branches, upstreams):
-        visit_rebase(child, all_branches, upstreams, start)
+    def visit_tree(self, branch, indent):
+        if branch == self.starting_branch:
+            self.colorprint('%s%s *' % (indent, branch), 'cyan', True)
+        elif branch == NO_UPSTREAM:
+            self.colorprint('%s%s' % (indent, branch), 'purple', False)
+        elif gitutils.is_remote(branch) and not self.upstreams[branch]:
+            self.colorprint('%s%s' % (indent, branch[8:]), 'red', True)
+        else:
+            self.colorprint('%s%s' % (indent, branch), 'green', False)
 
-def visit_clean(branch, all_branches, upstreams, start):
-    for child in get_children(branch, all_branches, upstreams):
-        visit_clean(child, all_branches, upstreams, start)
+        for child in self.get_children(branch):
+            self.visit_tree(child, indent + ' ')
 
-    if branch != start:
-        gitutils.git('branch', ['-d', branch])
+    def visit_rebase(self, branch):
+        if branch != self.starting_branch:
+            gitutils.git('checkout', [branch])
+            gitutils.git('pull', ['--rebase'])
 
-def main(args):
-    if not gitutils.in_git_repo():
-        return
+        for child in self.get_children(branch):
+            self.visit_rebase(child)
 
-    upstreams = gitutils.upstreams()
+    def visit_clean(self, branch):
+        for child in self.get_children(branch):
+            self.visit_clean(child)
 
-    all_branches = set(upstreams.keys())
-    current_branch = gitutils.current_branch()
+        if branch != self.starting_branch:
+            gitutils.git('branch', ['-d', branch])
 
-    if args.rebase:
-        visit_rebase(current_branch, all_branches, upstreams, current_branch)
-        gitutils.git('checkout', [current_branch])
-        return
+    def get_children(self, branch):
+        children = [b for b in self.all_branches if self.upstreams[b] == branch]
+        if branch == NO_UPSTREAM:
+            children += [b for b in self.all_branches if not gitutils.is_remote(b) and not self.upstreams[b]]
+        return children
 
-    if args.clean:
-        visit_clean(current_branch, all_branches, upstreams, current_branch)
-        return
+    def colorprint(self, text, color, bold):
+        if not sys.stdout.isatty() or self.no_color:
+            print(text)
+            return
 
-    # Get remote roots
-    rootlist = gitutils.remotes()
+        attr = []
+        if color == 'red':
+            attr.append('31')
+        elif color == 'cyan':
+            attr.append('36')
+        elif color == 'purple':
+            attr.append('35')
+        else: # Default to green
+            attr.append('32')
 
-    # Add local roots
-    num_local_roots = sum([b not in rootlist and not upstreams[b] for b in all_branches])
-    if num_local_roots > 0:
-        rootlist.append(NO_UPSTREAM)
+        if bold:
+            attr.append('1')
 
-    for root in rootlist:
-        visit(root, '', all_branches, upstreams, current_branch, args.no_color)
+        print('\x1b[%sm%s\x1b[0m' % (';'.join(attr), text))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -97,4 +105,5 @@ if __name__ == '__main__':
     parser.add_argument('--clean', help='Delete merged children', action='store_true')
     args = parser.parse_args()
 
-    main(args)
+    tree = GitTree(args)
+    tree.run()
