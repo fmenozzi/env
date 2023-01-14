@@ -15,8 +15,8 @@ alias gitd='git diff'
 alias gitdc='git diff --cached'
 
 # Shortened/custom commands
-alias l='exa -l --color=always --group-directories-first'
-alias ll='exa -al --color=always --group-directories-first'
+alias l='exa -lb --color=always --group-directories-first'
+alias ll='exa -alb --color=always --group-directories-first'
 alias lc='wc -l'
 alias o='vim $(fzf)'
 alias c='clear'
