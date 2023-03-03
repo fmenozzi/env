@@ -1,8 +1,27 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-WIKI_PATH=/usr/share/doc/arch-wiki/html/en/
-fd -t f . "$WIKI_PATH" |
-    sed -e "s#$WIKI_PATH##g" -e "s/.html//g" |
-    fzf --height=12 |
-    while read line; do echo "$WIKI_PATH${line}.html"; done |
-    xargs -ro xdg-open
+import argparse
+import os
+import pathlib
+import pyutils
+import sys
+
+LOCAL_WIKI_PATH = '/usr/share/doc/arch-wiki/html/en/'
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-l', '--local', action='store_true', help='open locally')
+args = parser.parse_args()
+
+article_titles = []
+for file in os.listdir(LOCAL_WIKI_PATH):
+    if os.path.isfile(os.path.join(LOCAL_WIKI_PATH, file)):
+        article_titles.append(pathlib.Path(file).stem)
+
+selected_title = pyutils.fzf(article_titles, '--height=12')
+if not selected_title:
+    sys.exit(0)
+
+if args.local:
+    pyutils.sh(f'xdg-open {LOCAL_WIKI_PATH}/{selected_title}.html')
+else:
+    pyutils.sh(f'firefox --new-tab "https://wiki.archlinux.org/title/{selected_title}"')
