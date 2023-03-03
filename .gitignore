@@ -2,3 +2,4 @@ TODO
 dotfiles/nvim/plugged
 dotfiles/git/custom-commands/gitutils.pyc
 dotfiles/git/custom-commands/__pycache__
+tools/__pycache__
