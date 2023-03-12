@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import pyutils
+
+parser = argparse.ArgumentParser()
+parser.add_argument("url", help="YouTube video URL")
+args = parser.parse_args()
+
+print('downloading video...')
+pyutils.sh(f'yt-dlp --write-info-json -o "video.%(ext)s" {args.url}')
+
+print('extracting metadata...')
+metadata, _, _ = pyutils.sh('jq "{chapters: .chapters, ext: .ext}" video.info.json')
+metadata_json = json.loads(metadata)
+ext = metadata_json['ext']
+for ch in metadata_json['chapters']:
+    title, start, end = ch['title'], ch['start_time'], ch['end_time']
+    print(f'extracting track {title}.ogg...')
+    pyutils.sh(f'ffmpeg -nostdin -i video.{ext} -ss {start} -to {end} -vn -c:a copy "{title}.ogg"')
