@@ -12,7 +12,7 @@
 
 [core]
     editor = nvim
-    excludesfile = /home/fmenozzi/.gitignore_global
+    excludesfile = /home/fed/.gitignore_global
     pager = delta --syntax-theme="Nord" --diff-so-fancy
 
 [delta]
