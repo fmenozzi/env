@@ -40,7 +40,9 @@ if [ -v USE_GREP ]; then
         fi
         START_DIR=$1
     fi
-    OPEN_PATH=$(rg . "$START_DIR" | fzf | cut -d: -f1)
+    GREP_FZF_OUTPUT=$(rg -n . "$START_DIR" | fzf)
+    OPEN_PATH=$(echo "$GREP_FZF_OUTPUT" | cut -d: -f1)
+    LINE_NUM=$(echo "$GREP_FZF_OUTPUT" | cut -d: -f2)
 # If directory argument is specified, interpret as starting directory (default
 # to home otherwise). If file argument is specified, open it directly either
 # via xdg-open or nvim
@@ -77,6 +79,11 @@ else
         fi
     done
 
-    # If not an xdg-open mime type, just open in vim by default.
-    nvim "$OPEN_PATH"
+    # If not an xdg-open mime type, just open in vim by default. Open at given
+    # line number if applicable.
+    if [ -v LINE_NUM ]; then
+        nvim "+$LINE_NUM" "$OPEN_PATH"
+    else
+        nvim "$OPEN_PATH"
+    fi
 fi
