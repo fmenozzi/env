@@ -17,11 +17,34 @@ XDG_OPEN_MIME_TYPES=(
     'video/webm'
 )
 
+while getopts "hg" opt; do
+    case $opt in
+        g)
+            USE_GREP=1
+            ;;
+        h | *)
+            echo "Usage: open [-h] [-g] [<path>]"
+            exit 0
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+# If -g option is passed, search by file contents rather than file names.
+START_DIR=~
+if [ -v USE_GREP ]; then
+    if [ -n "$1" ]; then
+        if [ ! -d "$1" ]; then
+            echo "Error: path must be directory when using -g"
+            exit 1
+        fi
+        START_DIR=$1
+    fi
+    OPEN_PATH=$(rg . "$START_DIR" | fzf | cut -d: -f1)
 # If directory argument is specified, interpret as starting directory (default
 # to home otherwise). If file argument is specified, open it directly either
 # via xdg-open or nvim
-START_DIR=~
-if [ -n "$1" ]; then
+elif [ -n "$1" ]; then
     if [ -d "$1" ]; then
         START_DIR=$1
     else
@@ -30,8 +53,9 @@ if [ -n "$1" ]; then
 fi
 
 # Get the path to the file/directory to be opened via fzf, if not already
-# specified.
-if [ -z "$OPEN_PATH" ]; then
+# specified. Skip this if the grep (-g) option was passed, as we want to avoid
+# the user exiting the grep fzf early and then initiating this fzf as well.
+if [ -z "$OPEN_PATH" ] && [ ! -v USE_GREP ]; then
     OPEN_PATH=$(fd . "$START_DIR" | fzf --preview='bat --color=always {}')
 fi
 
