@@ -14,7 +14,7 @@ source <(sudo cat $BACKUP_INFO)
 clean "$SRC_DIR"
 
 # Unlock LUKS device and mount.
-echo $DISK_PASSWORD | sudo cryptsetup open $DEVICE $DEVICE_NAME -
+echo "$DISK_PASSWORD" | sudo cryptsetup open $DEVICE $DEVICE_NAME -
 sudo mkdir -p $MOUNT_DIR
 sudo mount /dev/mapper/$DEVICE_NAME $MOUNT_DIR
 
