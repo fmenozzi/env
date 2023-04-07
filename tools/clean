@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+# Basic idea:
+# * Start in START_DIRECTORY (or cwd)
+# * Traverse each directory recursively
+#     * If CLEAN file present, execute it
+#         * Either case-sensitive CLEAN or case-insensitive but ignore this file!
+#     * Is it possible to determine when to stop early?
+
+import argparse
+import os
+import pyutils
+
+parser = argparse.ArgumentParser()
+parser.add_argument("start_dir", nargs='?', help="start directory for traversal")
+args = parser.parse_args()
+
+start_dir = args.start_dir if args.start_dir else os.getcwd()
+print(f'cleaning directory {start_dir}')
+
+for root, dirs, files in os.walk(start_dir):
+    for file in files:
+        if file == 'CLEAN':
+            full_file_path = os.path.join(root, file)
+            if not os.access(full_file_path, os.X_OK):
+                print(f'file {full_file_path} is not executable, skipping')
+                continue
+            print(f'running {full_file_path}')
+            os.chdir(os.path.dirname(full_file_path))
+            pyutils.sh(f'{full_file_path}')
