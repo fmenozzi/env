@@ -48,7 +48,8 @@ def rm(args):
         os.system(f'rm -f {path_note} {path_html}')
 
 def view(args):
-    cmd = 'mdcat' if args.no_pager else 'mdless'
+    no_pager = args.no_pager if 'no_pager' in args else False
+    cmd = 'mdcat' if no_pager else 'mdless'
 
     if 'name' in args and args.name:
         path_note = get_path_to_note(args.name)
@@ -72,7 +73,7 @@ def html(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.set_defaults(func=open)
+    parser.set_defaults(func=view)
     subparsers = parser.add_subparsers()
 
     parser_open = subparsers.add_parser('open', help='open notes')
