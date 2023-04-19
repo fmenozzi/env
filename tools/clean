@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
 
-# Basic idea:
-# * Start in START_DIRECTORY (or cwd)
-# * Traverse each directory recursively
-#     * If CLEAN file present, execute it
-#         * Either case-sensitive CLEAN or case-insensitive but ignore this file!
-#     * Is it possible to determine when to stop early?
-
 import argparse
 import os
 import pyutils
