@@ -10,6 +10,19 @@ DST_DIR_REMOTE=rclone:gdrive:backups/restic
 
 source <(sudo cat $BACKUP_INFO)
 
+while getopts "hd" opt; do
+    case $opt in
+        d)
+            DRY_RUN=1
+            ;;
+        h | *)
+            echo "Usage: backup [-h] [-d]"
+            exit 0
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
 # Clean source directory first to ensure we don't back up e.g. build artifacts.
 clean "$SRC_DIR"
 
@@ -19,14 +32,24 @@ sudo mkdir -p $MOUNT_DIR
 sudo mount /dev/mapper/$DEVICE_NAME $MOUNT_DIR
 
 # Back up data dir via restic (local).
-echo "Starting local restic backup..."
-restic -r $DST_DIR_LOCAL --verbose backup $SRC_DIR
+if [ -v DRY_RUN ]; then
+    echo "Starting local dry run..."
+    restic -r $DST_DIR_LOCAL --dry-run --verbose backup $SRC_DIR
+else
+    echo "Starting local restic backup..."
+    restic -r $DST_DIR_LOCAL --verbose backup $SRC_DIR
+fi
 
 # Unmount and lock LUKS device.
 sudo umount $MOUNT_DIR
 sudo cryptsetup close $DEVICE_NAME
 
-# Back up data dir via restic/rclone (remote)
-echo "Starting remote restic backup..."
-restic -r $DST_DIR_REMOTE --verbose backup $SRC_DIR
+# Back up data dir via restic/rclone (remote).
+if [ -v DRY_RUN ]; then
+    echo "Starting remote dry run..."
+    restic -r $DST_DIR_REMOTE --dry-run --verbose backup $SRC_DIR
+else
+    echo "Starting remote restic backup..."
+    restic -r $DST_DIR_REMOTE --verbose backup $SRC_DIR
+fi
 
