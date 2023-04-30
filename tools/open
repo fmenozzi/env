@@ -45,12 +45,15 @@ if [ -v USE_GREP ]; then
     LINE_NUM=$(echo "$GREP_FZF_OUTPUT" | cut -d: -f2)
 # If directory argument is specified, interpret as starting directory (default
 # to home otherwise). If file argument is specified, open it directly either
-# via xdg-open or nvim
+# via xdg-open or nvim. If argument is neither a valid file nor directory,
+# start a search in home directory using the argument as the starting query.
 elif [ -n "$1" ]; then
     if [ -d "$1" ]; then
         START_DIR=$1
-    else
+    elif [ -f "$1" ]; then
         OPEN_PATH=$1
+    else
+        STARTING_QUERY=$1
     fi
 fi
 
@@ -58,7 +61,7 @@ fi
 # specified. Skip this if the grep (-g) option was passed, as we want to avoid
 # the user exiting the grep fzf early and then initiating this fzf as well.
 if [ -z "$OPEN_PATH" ] && [ ! -v USE_GREP ]; then
-    OPEN_PATH=$(fd . "$START_DIR" | fzf --preview='bat --color=always {}')
+    OPEN_PATH=$(fd . "$START_DIR" | fzf --preview='bat --color=always {}' -q "$STARTING_QUERY")
 fi
 
 # If the path is empty (e.g. fzf exited early), exit early.
