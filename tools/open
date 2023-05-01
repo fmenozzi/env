@@ -34,13 +34,13 @@ shift $((OPTIND-1))
 START_DIR=~
 if [ -v USE_GREP ]; then
     if [ -n "$1" ]; then
-        if [ ! -d "$1" ]; then
-            echo "Error: path must be directory when using -g"
-            exit 1
+        if [ -d "$1" ]; then
+            START_DIR=$1
+        else
+            STARTING_QUERY=$1
         fi
-        START_DIR=$1
     fi
-    GREP_FZF_OUTPUT=$(rg -n . "$START_DIR" | fzf)
+    GREP_FZF_OUTPUT=$(rg -n . "$START_DIR" | fzf -q "$STARTING_QUERY")
     OPEN_PATH=$(echo "$GREP_FZF_OUTPUT" | cut -d: -f1)
     LINE_NUM=$(echo "$GREP_FZF_OUTPUT" | cut -d: -f2)
 # If directory argument is specified, interpret as starting directory (default
