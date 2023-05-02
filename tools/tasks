@@ -3,7 +3,7 @@
 import argparse
 import sqlite3
 
-DB_PATH = '/home/fed/fm/tasks.sqlite'
+DB_PATH = '/home/fed/fm/db/tasks.sqlite'
 DEFAULT_PRIORITY = 2;
 
 def create_or_open_db():
