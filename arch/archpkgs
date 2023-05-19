@@ -23,6 +23,7 @@ neovim
 nvtop
 pacman-contrib
 pandoc
+progress
 python
 python-docs
 rclone
