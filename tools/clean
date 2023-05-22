@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("start_dir", nargs='?', help="start directory for traversal")
 args = parser.parse_args()
 
-start_dir = args.start_dir if args.start_dir else os.getcwd()
+start_dir = os.path.abspath(args.start_dir) if args.start_dir else os.getcwd()
 print(f'cleaning directory {start_dir}')
 
 for root, dirs, files in os.walk(start_dir):
