@@ -20,6 +20,8 @@ alias ll='exa -alb --color=always --group-directories-first'
 alias lc='wc -l'
 alias o='vim $(fzf)'
 alias c='clear'
+alias rg-all='rg --hidden --no-ignore'
+alias fd-all='fd --hidden --no-ignore'
 
 # Extract from various archive types
 extract() {
