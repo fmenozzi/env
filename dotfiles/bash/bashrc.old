@@ -213,7 +213,7 @@ export GOPATH=~/go
 
 export ENV_PATH=~/fm/env
 export DOTFILES_PATH=~/fm/env/dotfiles
-export PATH=$PATH:$DOTFILES_PATH/git/custom-commands:$ENV_PATH/tools:~/.cargo/bin
+export PATH=$PATH:$DOTFILES_PATH/git/custom-commands:$ENV_PATH/scripts:~/.cargo/bin
 
 export RUST_SRC_PATH=~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/
 
