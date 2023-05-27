@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+
+import argparse
+import sqlite3
+from datetime import datetime, timezone
+from html.parser import HTMLParser
+from urllib.request import urlopen, Request
+
+DB_PATH = '/home/fed/fm/db/links.sqlite'
+SCHEMA_PATH = '/home/fed/fm/db/links_schema.sql'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+
+def create_or_open_db():
+    with open(SCHEMA_PATH, 'r') as schema_file:
+        schema = schema_file.read()
+    con = sqlite3.connect(DB_PATH)
+    cur = con.cursor()
+    cur.executescript(schema)
+    con.commit()
+    return con, cur
+
+def link_exists(link_id):
+    con, cur = create_or_open_db()
+    res = cur.execute('SELECT COUNT(*) FROM links WHERE id = ?', (link_id,))
+    count, = res.fetchone()
+    con.close()
+    return count == 1
+
+# TODO: Use variable formatting for column widths (e.g. if longest URL is less
+#       than the current MAX_URL_WIDTH then we don't need to allocate that much
+#       space for the URL column)
+def print_result_table(rows):
+    MAX_URL_WIDTH = 55
+    MAX_TITLE_WIDTH = 20
+    MAX_DESC_WIDTH = 20
+    def cell(cell_text, max_width):
+        if len(cell_text) <= max_width:
+            return cell_text
+        else:
+            return cell_text[:max_width-3] + '...'
+    fill_dashes_url = '─' * (MAX_URL_WIDTH + 2)
+    fill_dashes_title = '─' * (MAX_TITLE_WIDTH + 2)
+    fill_dashes_desc = '─' * (MAX_DESC_WIDTH + 2)
+    print(f'┌────┬' + fill_dashes_url + '┬' + fill_dashes_title + '┬' + fill_dashes_desc + '┐')
+    print(f'│ ID │ {"URL":^{MAX_URL_WIDTH}} │ {"Title":^{MAX_TITLE_WIDTH}} │ {"Description":^{MAX_DESC_WIDTH}} │')
+    print(f'├────┼' + fill_dashes_url + '┼' + fill_dashes_title + '┼' + fill_dashes_desc + '┤')
+    for idx, row in enumerate(rows):
+        id, url, title, desc, _, _= row
+        url, title, desc = (cell(url, MAX_URL_WIDTH), cell(title, MAX_TITLE_WIDTH), cell(desc, MAX_DESC_WIDTH))
+        print(f'│ {id:2} │ {url:{MAX_URL_WIDTH}} │ {title:{MAX_TITLE_WIDTH}} │ {desc:{MAX_DESC_WIDTH}} │')
+        if idx == len(rows) - 1:
+            print(f'└────┴' + fill_dashes_url + '┴' + fill_dashes_title + '┴' + fill_dashes_desc + '┘')
+        else:
+            print(f'├────┼' + fill_dashes_url + '┼' + fill_dashes_title + '┼' + fill_dashes_desc + '┤')
+
+def get_title_from_url(url):
+    request = Request(url, headers={'User-Agent': USER_AGENT})
+    try:
+        response = urlopen(request)
+        encoding = response.info().get_content_charset()
+        html = response.read().decode(encoding)
+        class TitleParser(HTMLParser):
+            def __init__(self):
+                HTMLParser.__init__(self)
+                self.match = False
+                self.title = ''
+            def handle_starttag(self, tag, attributes):
+                self.match = tag == 'title'
+            def handle_data(self, data):
+                if self.match:
+                    self.title = data
+                    self.match = False
+        title_parser = TitleParser()
+        title_parser.feed(html)
+        return title_parser.title
+    except HTTPError as e:
+        return ''
+
+def list_links(args):
+    con, cur = create_or_open_db()
+    res = cur.execute('SELECT * FROM links;')
+    rows = res.fetchall()
+    con.close()
+    if not rows:
+        return
+    if 'csv' in args and args.csv:
+        for row in rows:
+            (id, url, title, description, tags, date_added) = row
+            print(f'"{id}","{url}", "{title}", "{description}", "{tags}", "{date_added}"')
+    else:
+        print_result_table(rows)
+
+def add_link(args):
+    con, cur = create_or_open_db()
+    title = get_title_from_url(args.url)
+    description = args.description if args.description else ''
+    tags = args.tags if args.tags else ''
+    now_utc = datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
+    query = '''
+        INSERT INTO links (rowid, url, title, description, tags, date_added)
+        VALUES (NULL, ?, ?, ?, ?, ?);
+    '''
+    cur.execute(query, (args.url, title, description, tags, now_utc))
+    con.commit()
+    con.close()
+
+# TODO: Allow for selecting one or more links to remove via fzf-based fuzzy
+#       finding interface, searching on url/title/description/tags
+def remove_link(args):
+    if not link_exists(args.id):
+        print(f'Link id {args.id} not found')
+        return
+    con, cur = create_or_open_db()
+    cur.execute('DELETE FROM links WHERE id = ?', (args.id,))
+    con.commit()
+    con.close()
+
+def update_link(args):
+    if not link_exists(args.id):
+        print(f'Link id {args.id} not found')
+        return
+    con, cur = create_or_open_db()
+    if not args.url and not args.description and not args.tags:
+        print('Must update at least one of url, description, tags')
+        return
+    if args.url:
+        cur.execute('UPDATE links SET url = ? WHERE id = ?', (args.url, args.id))
+    if args.description:
+        cur.execute('UPDATE links SET description = ? WHERE id = ?', (args.description, args.id))
+    if args.tags:
+        cur.execute('UPDATE links SET tags = ? WHERE id = ?', (args.tags, args.id))
+    con.commit()
+    con.close()
+
+# TODO: Add queryless fzf-based finder option for searching all columns
+def find_link(args):
+    con, cur = create_or_open_db()
+    res = cur.execute('SELECT rowid, * FROM links_fts(?) ORDER BY rank;', (args.query,))
+    rows = res.fetchall()
+    con.close()
+    if not rows:
+        return
+    if args.csv:
+        for row in rows:
+            (id, url, title, description, tags, date_added) = row
+            print(f'"{id}","{url}", "{title}", "{description}", "{tags}", "{date_added}"')
+    else:
+        print_result_table(rows)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.set_defaults(func=list_links)
+    subparsers = parser.add_subparsers()
+
+    parser_list = subparsers.add_parser('ls', help='list links')
+    parser_list.set_defaults(func=list_links)
+    parser_list.add_argument('--csv', action='store_true', help='display in csv format')
+
+    parser_add = subparsers.add_parser('add', help='add new link')
+    parser_add.add_argument('url', help='link url')
+    parser_add.add_argument('-d', '--description', help='description for link')
+    parser_add.add_argument('-t', '--tags', help='comma-separated list of tags')
+    parser_add.set_defaults(func=add_link)
+
+    parser_rm = subparsers.add_parser('rm', help='remove link')
+    parser_rm.set_defaults(func=remove_link)
+    parser_rm.add_argument('id', type=int, help='link id (taken from \'links ls\')')
+
+    parser_update = subparsers.add_parser('update', help='update link')
+    parser_update.set_defaults(func=update_link)
+    parser_update.add_argument('id', type=int, help='link id (taken from \'links ls\')')
+    parser_update.add_argument('-u', '--url', help='new url')
+    parser_update.add_argument('-d', '--description', help='new description')
+    parser_update.add_argument('-t', '--tags', help='new tags')
+
+    parser_find = subparsers.add_parser('find', help='find links')
+    parser_find.set_defaults(func=find_link)
+    parser_find.add_argument('query', help='search query')
+    parser_find.add_argument('--csv', action='store_true', help='display in csv format')
+
+    args = parser.parse_args()
+    args.func(args)
