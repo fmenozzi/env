@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import csv
 import sqlite3
 import pyutils
 from datetime import datetime, timezone
@@ -177,6 +178,29 @@ def open_link(args):
         _, url, _, _, _, _ = stringified_rows_to_rows[pyutils.fzf(fzf_input, '')]
     pyutils.sh(f'xdg-open {url}')
 
+def load_links(args):
+    with open(args.csv_file, newline='') as csv_file:
+        reader = csv.reader(csv_file, delimiter=',', quotechar='"')
+        data = []
+        for row in reader:
+            url, description, tags = row
+            title = get_title_from_url(url)
+            now_utc = datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
+            data.append({
+                "url": url,
+                "title": title,
+                "description": description,
+                "tags": tags,
+                "date_added": now_utc,
+            })
+        con, cur = create_or_open_db()
+        cur.executemany(
+            'INSERT INTO links VALUES(NULL, :url, :title, :description, :tags, :date_added);',
+            data
+        )
+        con.commit()
+        con.close()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.set_defaults(func=list_links)
@@ -211,6 +235,10 @@ if __name__ == '__main__':
     parser_open = subparsers.add_parser('open', help='open links in browser')
     parser_open.set_defaults(func=open_link)
     parser_open.add_argument('id', type=int, nargs='?', help='link id (taken from \'links ls\')')
+
+    parser_load = subparsers.add_parser('load', help='load links from csv (url,desc,tags)')
+    parser_load.set_defaults(func=load_links)
+    parser_load.add_argument('csv_file', help='csv file (url,desc,tags)')
 
     args = parser.parse_args()
     args.func(args)
