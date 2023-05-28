@@ -60,7 +60,7 @@ def get_title_from_url(url):
     try:
         response = urlopen(request)
         encoding = response.info().get_content_charset()
-        html = response.read().decode(encoding)
+        html = response.read().decode(encoding if encoding else 'utf-8')
         class TitleParser(HTMLParser):
             def __init__(self):
                 HTMLParser.__init__(self)
@@ -74,8 +74,8 @@ def get_title_from_url(url):
                     self.match = False
         title_parser = TitleParser()
         title_parser.feed(html)
-        return title_parser.title
-    except HTTPError as e:
+        return title_parser.title.strip()
+    except Exception:
         return ''
 
 def stringify_row(row):
@@ -148,7 +148,11 @@ def find_link(args):
         rows = res.fetchall()
         stringified_rows_to_rows = {stringify_row(row): row for row in rows}
         fzf_input = stringified_rows_to_rows.keys()
-        rows = [stringified_rows_to_rows[pyutils.fzf(fzf_input, '')]]
+        fzf_selection = pyutils.fzf(fzf_input, '')
+        if fzf_selection:
+            rows = [stringified_rows_to_rows[fzf_selection]]
+        else:
+            rows = []
     con.close()
     if not rows:
         return
@@ -175,7 +179,11 @@ def open_link(args):
         con.close()
         stringified_rows_to_rows = {stringify_row(row): row for row in rows}
         fzf_input = stringified_rows_to_rows.keys()
-        _, url, _, _, _, _ = stringified_rows_to_rows[pyutils.fzf(fzf_input, '')]
+        fzf_selection = pyutils.fzf(fzf_input, '')
+        if fzf_selection:
+            _, url, _, _, _, _ = stringified_rows_to_rows[fzf_selection]
+        else:
+            return
     pyutils.sh(f'xdg-open {url}')
 
 def load_links(args):
@@ -183,7 +191,10 @@ def load_links(args):
         reader = csv.reader(csv_file, delimiter=',', quotechar='"')
         data = []
         for row in reader:
+            if not row:
+                continue
             url, description, tags = row
+            print(f'Loading {url}...')
             title = get_title_from_url(url)
             now_utc = datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
             data.append({
