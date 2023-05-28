@@ -2,6 +2,7 @@
 
 import argparse
 import sqlite3
+import pyutils
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from urllib.request import urlopen, Request
@@ -76,6 +77,10 @@ def get_title_from_url(url):
     except HTTPError as e:
         return ''
 
+def stringify_row(row):
+    id, url, title, description, tags, date_added = row
+    return f'{id} {url} {title} {description} {tags} {date_added}'
+
 def list_links(args):
     con, cur = create_or_open_db()
     res = cur.execute('SELECT * FROM links;')
@@ -132,17 +137,23 @@ def update_link(args):
     con.commit()
     con.close()
 
-# TODO: Add queryless fzf-based finder option for searching all columns
 def find_link(args):
     con, cur = create_or_open_db()
-    res = cur.execute('SELECT rowid, * FROM links_fts(?) ORDER BY rank;', (args.query,))
-    rows = res.fetchall()
+    if args.query:
+        res = cur.execute('SELECT rowid, * FROM links_fts(?) ORDER BY rank;', (args.query,))
+        rows = res.fetchall()
+    else:
+        res = cur.execute('SELECT * FROM links;')
+        rows = res.fetchall()
+        stringified_rows_to_rows = {stringify_row(row): row for row in rows}
+        fzf_input = stringified_rows_to_rows.keys()
+        rows = [stringified_rows_to_rows[pyutils.fzf(fzf_input, '')]]
     con.close()
     if not rows:
         return
     if args.csv:
         for row in rows:
-            (id, url, title, description, tags, date_added) = row
+            id, url, title, description, tags, date_added = row
             print(f'"{id}","{url}", "{title}", "{description}", "{tags}", "{date_added}"')
     else:
         print_result_table(rows)
@@ -175,7 +186,7 @@ if __name__ == '__main__':
 
     parser_find = subparsers.add_parser('find', help='find links')
     parser_find.set_defaults(func=find_link)
-    parser_find.add_argument('query', help='search query')
+    parser_find.add_argument('query', nargs='?', help='search query')
     parser_find.add_argument('--csv', action='store_true', help='display in csv format')
 
     args = parser.parse_args()
