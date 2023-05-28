@@ -148,7 +148,7 @@ def find_link(args):
         rows = res.fetchall()
         stringified_rows_to_rows = {stringify_row(row): row for row in rows}
         fzf_input = stringified_rows_to_rows.keys()
-        fzf_selection = pyutils.fzf(fzf_input, '')
+        fzf_selection = pyutils.fzf(fzf_input)
         if fzf_selection:
             rows = [stringified_rows_to_rows[fzf_selection]]
         else:
@@ -179,7 +179,7 @@ def open_link(args):
         con.close()
         stringified_rows_to_rows = {stringify_row(row): row for row in rows}
         fzf_input = stringified_rows_to_rows.keys()
-        fzf_selection = pyutils.fzf(fzf_input, '')
+        fzf_selection = pyutils.fzf(fzf_input)
         if fzf_selection:
             _, url, _, _, _, _ = stringified_rows_to_rows[fzf_selection]
         else:

@@ -8,7 +8,7 @@ def sh(cmd):
     stderr = res.stderr.strip() if res.stderr else None
     return stdout, stderr, res.returncode
 
-def fzf(input_items, fzf_args_str):
+def fzf(input_items, fzf_args_str=''):
     input_bytes = '\n'.join(input_items).encode('utf-8')
     try:
         output = check_output(f'fzf {fzf_args_str}', shell=True, input=input_bytes)
