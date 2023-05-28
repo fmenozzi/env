@@ -158,6 +158,25 @@ def find_link(args):
     else:
         print_result_table(rows)
 
+def open_link(args):
+    if 'id' in args and args.id:
+        if not link_exists(args.id):
+            print(f'Link id {args.id} not found')
+            return
+        con, cur = create_or_open_db()
+        res = cur.execute('SELECT url FROM links WHERE id = ?', (args.id,))
+        url, = res.fetchone()
+        con.close()
+    else:
+        con, cur = create_or_open_db()
+        res = cur.execute('SELECT * FROM links;')
+        rows = res.fetchall()
+        con.close()
+        stringified_rows_to_rows = {stringify_row(row): row for row in rows}
+        fzf_input = stringified_rows_to_rows.keys()
+        _, url, _, _, _, _ = stringified_rows_to_rows[pyutils.fzf(fzf_input, '')]
+    pyutils.sh(f'xdg-open {url}')
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.set_defaults(func=list_links)
@@ -188,6 +207,10 @@ if __name__ == '__main__':
     parser_find.set_defaults(func=find_link)
     parser_find.add_argument('query', nargs='?', help='search query')
     parser_find.add_argument('--csv', action='store_true', help='display in csv format')
+
+    parser_open = subparsers.add_parser('open', help='open links in browser')
+    parser_open.set_defaults(func=open_link)
+    parser_open.add_argument('id', type=int, nargs='?', help='link id (taken from \'links ls\')')
 
     args = parser.parse_args()
     args.func(args)
