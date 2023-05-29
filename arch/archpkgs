@@ -26,6 +26,7 @@ pandoc
 progress
 python
 python-docs
+python-pynvim
 rclone
 rebuild-detector
 reflector

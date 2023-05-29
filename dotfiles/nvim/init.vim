@@ -59,6 +59,7 @@ source ~/.config/nvim/plugins/nerdtree.vim
 source ~/.config/nvim/plugins/nord.vim
 source ~/.config/nvim/plugins/polyglot.vim
 source ~/.config/nvim/plugins/rust.vim
+source ~/.config/nvim/plugins/ycm.vim
 
 call plug#end()
 
