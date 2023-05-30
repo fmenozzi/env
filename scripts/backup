@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 BACKUP_INFO=/home/fed/.backup-info
+EXCLUDE_FILE=/home/fed/.backup-exclude
 DEVICE=/dev/sdb
 DEVICE_NAME=AvaBackup
 MOUNT_DIR=/mnt/ava-backup
@@ -34,10 +35,10 @@ sudo mount /dev/mapper/$DEVICE_NAME $MOUNT_DIR
 # Back up data dir via restic (local).
 if [ -v DRY_RUN ]; then
     echo "Starting local dry run..."
-    restic -r $DST_DIR_LOCAL --dry-run --verbose backup $SRC_DIR
+    restic -r $DST_DIR_LOCAL --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup $SRC_DIR
 else
     echo "Starting local restic backup..."
-    restic -r $DST_DIR_LOCAL --verbose backup $SRC_DIR
+    restic -r $DST_DIR_LOCAL --exclude-file=$EXCLUDE_FILE --verbose backup $SRC_DIR
 fi
 
 # Unmount and lock LUKS device.
@@ -47,9 +48,9 @@ sudo cryptsetup close $DEVICE_NAME
 # Back up data dir via restic/rclone (remote).
 if [ -v DRY_RUN ]; then
     echo "Starting remote dry run..."
-    restic -r $DST_DIR_REMOTE --dry-run --verbose backup $SRC_DIR
+    restic -r $DST_DIR_REMOTE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup $SRC_DIR
 else
     echo "Starting remote restic backup..."
-    restic -r $DST_DIR_REMOTE --verbose backup $SRC_DIR
+    restic -r $DST_DIR_REMOTE --exclude-file=$EXCLUDE_FILE --verbose backup $SRC_DIR
 fi
 
