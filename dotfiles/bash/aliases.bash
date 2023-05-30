@@ -22,6 +22,7 @@ alias o='vim $(fzf)'
 alias c='clear'
 alias rg-all='rg --hidden --no-ignore'
 alias fd-all='fd --hidden --no-ignore'
+alias vpn='protonvpn-cli'
 
 # Extract from various archive types
 extract() {
