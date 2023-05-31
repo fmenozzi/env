@@ -12,12 +12,21 @@ def git(cmd, args=[], stdin=None, stderr=None, shell=False, universal_newlines=F
 def in_git_repo():
     return git("rev-parse") == ""
 
+# Perform some basic checks on the repo.
+def check_repo():
+    # We must be in a git repo to do anything.
+    assert in_git_repo(), "Must be within git repo"
+
+    # Repo must contain one of (but not both) "master" or "main".
+    all_branches = branches()
+    assert "main" in all_branches or "master" in all_branches
+    assert not ("main" in all_branches and "master" in all_branches), "Cannot have both master and main"
+
 # Get the "main" branch of this repo. Historically this has been called "master"
 # but nowadays this seems to be shifting to "main". Here we assume that the
 # repo contains exactly one of these branch names.
 def main_branch():
     all_branches = branches()
-    assert not ("main" in all_branches and "master" in all_branches)
     if "main" in all_branches:
         return "main"
     if "master" in all_branches:

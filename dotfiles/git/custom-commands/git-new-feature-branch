@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
+import argparse
 import gitutils
 
-import argparse
-
 def main(new_branch, no_set_upstream, no_checkout):
-    if not gitutils.in_git_repo():
-        return
-
     old_branch = gitutils.current_branch()
 
     gitutils.git("branch", [new_branch])
@@ -24,5 +20,7 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--no-set-upstream", help="Don't set upstream", action="store_true")
     parser.add_argument("-c", "--no-checkout", help="Don't checkout new branch", action="store_true")
     args = parser.parse_args()
+
+    gitutils.check_repo()
 
     main(args.new_branch, args.no_set_upstream, args.no_checkout)

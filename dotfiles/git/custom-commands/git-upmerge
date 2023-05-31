@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
+import argparse
 import gitutils
 
-import argparse
-
 def main(push, stop_at):
-    if not gitutils.in_git_repo():
-        return
-
     upstreams = gitutils.upstreams()
 
     branch = str(gitutils.current_branch())
@@ -38,5 +34,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--push", help="Push final branch to origin, if applicable", action="store_true")
     parser.add_argument("--stop-at", help="Branch where final merge occurs", action="store")
     args = parser.parse_args()
+
+    gitutils.check_repo()
 
     main(args.push, args.stop_at)
