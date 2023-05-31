@@ -69,7 +69,7 @@ class GitTree():
         for child in self.get_children(branch):
             self.visit_clean(child)
 
-        if branch != self.starting_branch and gitutils.is_fully_merged_into_master(branch):
+        if branch != self.starting_branch and gitutils.is_fully_merged_into_main(branch):
             gitutils.git('branch', ['-d', branch])
 
     def get_children(self, branch):

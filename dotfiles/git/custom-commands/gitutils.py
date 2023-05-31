@@ -12,10 +12,22 @@ def git(cmd, args=[], stdin=None, stderr=None, shell=False, universal_newlines=F
 def in_git_repo():
     return git("rev-parse") == ""
 
-# Determine if the given branch has been fully merged into master (and can
-# therefore be deleted).
-def is_fully_merged_into_master(branch):
-    return branch in git('branch', ['--merged', 'master'])
+# Get the "main" branch of this repo. Historically this has been called "master"
+# but nowadays this seems to be shifting to "main". Here we assume that the
+# repo contains exactly one of these branch names.
+def main_branch():
+    all_branches = branches()
+    assert not ("main" in all_branches and "master" in all_branches)
+    if "main" in all_branches:
+        return "main"
+    if "master" in all_branches:
+        return "master"
+    raise AssertionError("Could not determine the main branch")
+
+# Determine if the given branch has been fully merged into the main branch (and
+# can therefore be deleted).
+def is_fully_merged_into_main(branch):
+    return branch in git('branch', ['--merged', main_branch()])
 
 # Get list of all branches in current directory
 def branches():
