@@ -12,6 +12,11 @@ def git(cmd, args=[], stdin=None, stderr=None, shell=False, universal_newlines=F
 def in_git_repo():
     return git("rev-parse") == ""
 
+# Determine if the given branch has been fully merged into master (and can
+# therefore be deleted).
+def is_fully_merged_into_master(branch):
+    return branch in git('branch', ['--merged', 'master'])
+
 # Get list of all branches in current directory
 def branches():
     branches_with_asterisk = [line.strip() for line in git("branch").splitlines()]
