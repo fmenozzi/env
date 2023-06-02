@@ -43,17 +43,17 @@ def print_result_table(rows):
     fill_dashes_url = '─' * (MAX_URL_WIDTH + 2)
     fill_dashes_title = '─' * (MAX_TITLE_WIDTH + 2)
     fill_dashes_desc = '─' * (MAX_DESC_WIDTH + 2)
-    print(f'┌────┬' + fill_dashes_url + '┬' + fill_dashes_title + '┬' + fill_dashes_desc + '┐')
-    print(f'│ ID │ {"URL":^{MAX_URL_WIDTH}} │ {"Title":^{MAX_TITLE_WIDTH}} │ {"Description":^{MAX_DESC_WIDTH}} │')
-    print(f'├────┼' + fill_dashes_url + '┼' + fill_dashes_title + '┼' + fill_dashes_desc + '┤')
+    print(f'┌──────┬' + fill_dashes_url + '┬' + fill_dashes_title + '┬' + fill_dashes_desc + '┐')
+    print(f'│  ID  │ {"URL":^{MAX_URL_WIDTH}} │ {"Title":^{MAX_TITLE_WIDTH}} │ {"Description":^{MAX_DESC_WIDTH}} │')
+    print(f'├──────┼' + fill_dashes_url + '┼' + fill_dashes_title + '┼' + fill_dashes_desc + '┤')
     for idx, row in enumerate(rows):
         id, url, title, desc, _, _= row
         url, title, desc = (cell(url, MAX_URL_WIDTH), cell(title, MAX_TITLE_WIDTH), cell(desc, MAX_DESC_WIDTH))
-        print(f'│ {id:2} │ {url:{MAX_URL_WIDTH}} │ {title:{MAX_TITLE_WIDTH}} │ {desc:{MAX_DESC_WIDTH}} │')
+        print(f'│ {id:^4} │ {url:{MAX_URL_WIDTH}} │ {title:{MAX_TITLE_WIDTH}} │ {desc:{MAX_DESC_WIDTH}} │')
         if idx == len(rows) - 1:
-            print(f'└────┴' + fill_dashes_url + '┴' + fill_dashes_title + '┴' + fill_dashes_desc + '┘')
+            print(f'└──────┴' + fill_dashes_url + '┴' + fill_dashes_title + '┴' + fill_dashes_desc + '┘')
         else:
-            print(f'├────┼' + fill_dashes_url + '┼' + fill_dashes_title + '┼' + fill_dashes_desc + '┤')
+            print(f'├──────┼' + fill_dashes_url + '┼' + fill_dashes_title + '┼' + fill_dashes_desc + '┤')
 
 def get_title_from_url(url):
     request = Request(url, headers={'User-Agent': USER_AGENT})
