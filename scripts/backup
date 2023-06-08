@@ -7,7 +7,7 @@ DEVICE_NAME=AvaBackup
 MOUNT_DIR=/mnt/ava-backup
 SRC_DIR=/home/fed/fm
 DST_DIR_LOCAL=$MOUNT_DIR/backups/automatic/restic
-DST_DIR_REMOTE=rclone:gdrive:backups/restic
+DST_DIR_REMOTE=s3:s3.us-east-005.backblazeb2.com/fm-backup-restic
 
 source <(sudo cat $BACKUP_INFO)
 
@@ -45,7 +45,7 @@ fi
 sudo umount $MOUNT_DIR
 sudo cryptsetup close $DEVICE_NAME
 
-# Back up data dir via restic/rclone (remote).
+# Back up data dir via restic/backblaze b2 s3 API (remote).
 if [ -v DRY_RUN ]; then
     echo "Starting remote dry run..."
     restic -r $DST_DIR_REMOTE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup $SRC_DIR
