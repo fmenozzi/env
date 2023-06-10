@@ -9,6 +9,7 @@
     unstage = reset HEAD --
     supdate = submodule update --remote --merge
     spush = push --recursive-submodules=on-demand
+    track = log --follow -p
 
 [core]
     editor = nvim
