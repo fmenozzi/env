@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 # These mime types will be opened via xdg-open instead of vim.
 XDG_OPEN_MIME_TYPES=(
     'application/pdf'

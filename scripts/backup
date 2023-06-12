@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 BACKUP_INFO=/home/fed/.backup-info
 EXCLUDE_FILE=/home/fed/.backup-exclude
 DEVICE=/dev/sdb

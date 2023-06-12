@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 BACKUP_INFO=/home/fed/.backup-info
 DEVICE=/dev/sdb
 DEVICE_NAME=AvaBackup
