@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+VAULT_PARENT_DIR=/home/fed/fm
+VAULT_DIR_NAME=vault
+VAULT="$VAULT_PARENT_DIR/$VAULT_DIR_NAME"
+VAULT_GPGTAR_NAME=vault.gpgtar
+VAULT_GPGTAR="$VAULT_PARENT_DIR/$VAULT_GPGTAR_NAME"
+
+# Needed for ensuring gpg-agent works properly (e.g. password prompting).
+GPG_TTY=$(tty)
+export GPG_TTY
+
+case "$1" in
+    lock)
+        if [ ! -d "$VAULT_PARENT_DIR" ]; then
+            echo "error: vault parent directory $VAULT_PARENT_DIR does not exist"
+            exit 1
+        fi
+        if [ -f "$VAULT_GPGTAR" ]; then
+            echo "vault $VAULT_GPGTAR already exists"
+            exit 0
+        fi
+        gpgtar \
+            --directory "$VAULT_PARENT_DIR" \
+            --encrypt \
+            --symmetric \
+            --gpg-args="--personal-cipher-preferences AES256 --no-symkey-cache" \
+            --output "$VAULT_GPGTAR_NAME" \
+            "$VAULT_DIR_NAME"
+        if [ -f "$VAULT_GPGTAR" ]; then
+            rm -rf $VAULT
+        fi
+        ;;
+    unlock)
+        if [ ! -f "$VAULT_GPGTAR" ]; then
+            echo "error: vault gpgtar file $VAULT_GPGTAR does not exist"
+            exit 1
+        fi
+        gpgtar --directory "$VAULT_PARENT_DIR" --decrypt "$VAULT_GPGTAR"
+        if [ -d "$VAULT" ]; then
+            rm "$VAULT_GPGTAR"
+        fi
+        ;;
+    ls)
+        if [ ! -f "$VAULT_GPGTAR" ]; then
+            echo "error: vault gpgtar file $VAULT_GPGTAR does not exist"
+            exit 1
+        fi
+        gpgtar --list-archive "$VAULT_GPGTAR"
+        ;;
+    -h|--help)
+        echo "Usage: vault [-h|--help] [lock|unlock|ls]"
+        exit 0
+        ;;
+    *)
+        echo "invalid command entered"
+        exit 1
+        ;;
+esac
