@@ -4,6 +4,7 @@ import argparse
 import csv
 import sqlite3
 import pyutils
+import shutil
 import sys
 from datetime import datetime, timezone
 from html.parser import HTMLParser
@@ -12,6 +13,14 @@ from urllib.request import urlopen, Request
 DB_PATH = '/home/fed/fm/db/links.sqlite'
 SCHEMA_PATH = '/home/fed/fm/db/links_schema.sql'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+
+# Preset url, title, and description max column widths for common terminal width
+# configurations, used when printing the formatted result table.
+WIDTH_PRESETS = {
+    114: (55, 21, 21),
+    160: (70, 36, 36),
+    230: (110, 51, 51),
+}
 
 def create_or_open_db():
     with open(SCHEMA_PATH, 'r') as schema_file:
@@ -32,13 +41,13 @@ def link_exists(link_id):
 def now_utc():
     return datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
 
-# TODO: Use variable formatting for column widths (e.g. if longest URL is less
-#       than the current MAX_URL_WIDTH then we don't need to allocate that much
-#       space for the URL column)
 def print_result_table(rows):
-    MAX_URL_WIDTH = 55
-    MAX_TITLE_WIDTH = 20
-    MAX_DESC_WIDTH = 20
+    terminal_width = shutil.get_terminal_size().columns
+    for terminal_preset_width in sorted(WIDTH_PRESETS.keys()):
+        if terminal_width <= terminal_preset_width:
+            preset = WIDTH_PRESETS[terminal_preset_width]
+            break
+    MAX_URL_WIDTH, MAX_TITLE_WIDTH, MAX_DESC_WIDTH = preset
     def cell(cell_text, max_width):
         if len(cell_text) <= max_width:
             return cell_text
