@@ -29,6 +29,9 @@ def link_exists(link_id):
     con.close()
     return count == 1
 
+def now_utc():
+    return datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
+
 # TODO: Use variable formatting for column widths (e.g. if longest URL is less
 #       than the current MAX_URL_WIDTH then we don't need to allocate that much
 #       space for the URL column)
@@ -102,12 +105,11 @@ def add_link(args):
     title = get_title_from_url(args.url)
     description = args.description if args.description else ''
     tags = args.tags if args.tags else ''
-    now_utc = datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
     query = '''
         INSERT INTO links (rowid, url, title, description, tags, date_added)
         VALUES (NULL, ?, ?, ?, ?, ?);
     '''
-    cur.execute(query, (args.url, title, description, tags, now_utc))
+    cur.execute(query, (args.url, title, description, tags, now_utc()))
     con.commit()
     con.close()
 
@@ -197,13 +199,12 @@ def load_links(args):
             url, description, tags = row
             print(f'Loading {url}...')
             title = get_title_from_url(url)
-            now_utc = datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
             data.append({
                 "url": url,
                 "title": title,
                 "description": description,
                 "tags": tags,
-                "date_added": now_utc,
+                "date_added": now_utc(),
             })
         con, cur = create_or_open_db()
         cur.executemany(
