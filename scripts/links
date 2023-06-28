@@ -4,6 +4,7 @@ import argparse
 import csv
 import sqlite3
 import pyutils
+import sys
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from urllib.request import urlopen, Request
@@ -115,7 +116,7 @@ def add_link(args):
 def remove_link(args):
     if not link_exists(args.id):
         print(f'Link id {args.id} not found')
-        return
+        sys.exit(1)
     con, cur = create_or_open_db()
     cur.execute('DELETE FROM links WHERE id = ?', (args.id,))
     con.commit()
@@ -124,11 +125,11 @@ def remove_link(args):
 def update_link(args):
     if not link_exists(args.id):
         print(f'Link id {args.id} not found')
-        return
+        sys.exit(1)
     con, cur = create_or_open_db()
     if not args.url and not args.description and not args.tags:
         print('Must update at least one of url, description, tags')
-        return
+        sys.exit(1)
     if args.url:
         cur.execute('UPDATE links SET url = ? WHERE id = ?', (args.url, args.id))
     if args.description:
@@ -167,7 +168,7 @@ def open_link(args):
     if 'id' in args and args.id:
         if not link_exists(args.id):
             print(f'Link id {args.id} not found')
-            return
+            sys.exit(1)
         con, cur = create_or_open_db()
         res = cur.execute('SELECT url FROM links WHERE id = ?', (args.id,))
         url, = res.fetchone()
