@@ -214,6 +214,15 @@ def load_links(args):
         con.commit()
         con.close()
 
+def list_urls(args):
+    con, cur = create_or_open_db()
+    res = cur.execute('SELECT url FROM links ORDER BY date_added ASC;')
+    rows = res.fetchall()
+    con.close()
+    for row in rows:
+        url, = row
+        print(f'{url}')
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.set_defaults(func=list_links)
@@ -252,6 +261,9 @@ if __name__ == '__main__':
     parser_load = subparsers.add_parser('load', help='load links from csv (url,desc,tags)')
     parser_load.set_defaults(func=load_links)
     parser_load.add_argument('csv_file', help='csv file (url,desc,tags)')
+
+    parser_urls = subparsers.add_parser('urls', help='list all urls in insertion order')
+    parser_urls.set_defaults(func=list_urls)
 
     args = parser.parse_args()
     args.func(args)
