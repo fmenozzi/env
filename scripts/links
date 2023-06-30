@@ -148,10 +148,10 @@ def update_link(args):
         cur.execute('UPDATE links SET description = ? WHERE id = ?', (args.description, args.id))
     if args.tags:
         new_tags = args.tags
-        if args.tags.startswith('%t'):
-            # %t represents the existing tags and is used to make easier appends.
+        if '%t' in args.tags:
+            # %t represents the existing tags and is used to make easier modifications.
             old_tags, = cur.execute('SELECT tags FROM links WHERE id = ?', (args.id,)).fetchone()
-            new_tags = old_tags + args.tags[2:]
+            new_tags = args.tags.replace('%t', old_tags)
         cur.execute('UPDATE links SET tags = ? WHERE id = ?', (new_tags, args.id))
     con.commit()
     con.close()
