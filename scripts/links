@@ -238,6 +238,37 @@ def list_urls(args):
         url, = row
         print(f'{url}')
 
+def list_tags(args):
+    con, cur = create_or_open_db()
+    res = cur.execute('SELECT id, url, tags FROM links;')
+    rows = res.fetchall()
+    con.close()
+    if args.histogram:
+        tags = {}
+        for row in rows:
+            _, _, comma_separated_tags = row
+            tags_list = comma_separated_tags.split(',')
+            for tag in tags_list:
+                if tag not in tags:
+                    tags[tag] = 1
+                else:
+                    tags[tag] += 1
+        tag_histogram = {tag: count for tag, count in sorted(tags.items(), key=lambda item: item[1], reverse=True)}
+        for tag in tag_histogram:
+            print(f'{tag}, {tag_histogram[tag]}')
+    elif args.table:
+        print('UNIMPLEMENTED')
+    else:
+        # Simply print all tags alphabetically.
+        tags = set()
+        for row in rows:
+            id, url, comma_separated_tags = row
+            tags_list = comma_separated_tags.split(',')
+            for tag in tags_list:
+                tags.add(tag)
+        for tag in sorted(tags):
+            print(f'{tag}')
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -279,6 +310,12 @@ if __name__ == '__main__':
 
     parser_urls = subparsers.add_parser('urls', help='list all urls in insertion order')
     parser_urls.set_defaults(func=list_urls)
+
+    parser_tags = subparsers.add_parser('tags', help='list all tags alphabetically')
+    parser_tags_group = parser_tags.add_mutually_exclusive_group()
+    parser_tags_group.add_argument('--histogram', action='store_true', help='show tags and counts')
+    parser_tags_group.add_argument('-t', '--table', action='store_true', help='show ids, urls, tags')
+    parser_tags.set_defaults(func=list_tags)
 
     args = parser.parse_args()
     args.func(args)
