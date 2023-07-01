@@ -95,10 +95,10 @@ def update_task(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.set_defaults(func=list_tasks)
     subparsers = parser.add_subparsers()
+    parser.set_defaults(func=list_tasks)
 
-    parser_list = subparsers.add_parser('list', help='list tasks')
+    parser_list = subparsers.add_parser('ls', help='list tasks')
     parser_list.add_argument('-p', type=int, help='priority to filter by')
     parser_list.set_defaults(func=list_tasks)
 
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     parser_add.add_argument('-p', type=int, help='task priority')
     parser_add.set_defaults(func=add_task)
 
-    parser_remove = subparsers.add_parser('remove', help='remove task')
+    parser_remove = subparsers.add_parser('rm', help='remove task')
     parser_remove.add_argument('id', type=int, help='task id to remove')
     parser_remove.set_defaults(func=remove_task)
 

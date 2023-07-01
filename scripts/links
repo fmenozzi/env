@@ -240,12 +240,12 @@ def list_urls(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.set_defaults(func=list_links)
     subparsers = parser.add_subparsers()
+    parser.set_defaults(func=list_links)
 
     parser_list = subparsers.add_parser('ls', help='list links')
-    parser_list.set_defaults(func=list_links)
     parser_list.add_argument('--csv', action='store_true', help='display in csv format')
+    parser_list.set_defaults(func=list_links)
 
     parser_add = subparsers.add_parser('add', help='add new link')
     parser_add.add_argument('url', help='link url')
@@ -254,28 +254,28 @@ if __name__ == '__main__':
     parser_add.set_defaults(func=add_link)
 
     parser_rm = subparsers.add_parser('rm', help='remove link')
-    parser_rm.set_defaults(func=remove_link)
     parser_rm.add_argument('id', type=int, help='link id (taken from \'links ls\')')
+    parser_rm.set_defaults(func=remove_link)
 
     parser_update = subparsers.add_parser('update', help='update link')
-    parser_update.set_defaults(func=update_link)
     parser_update.add_argument('id', type=int, help='link id (taken from \'links ls\')')
     parser_update.add_argument('-u', '--url', help='new url')
     parser_update.add_argument('-d', '--description', help='new description')
     parser_update.add_argument('-t', '--tags', help='new tags')
+    parser_update.set_defaults(func=update_link)
 
     parser_find = subparsers.add_parser('find', help='find links')
-    parser_find.set_defaults(func=find_link)
     parser_find.add_argument('query', nargs='?', help='search query')
     parser_find.add_argument('--csv', action='store_true', help='display in csv format')
+    parser_find.set_defaults(func=find_link)
 
     parser_open = subparsers.add_parser('open', help='open links in browser')
-    parser_open.set_defaults(func=open_link)
     parser_open.add_argument('id', type=int, nargs='?', help='link id (taken from \'links ls\')')
+    parser_open.set_defaults(func=open_link)
 
     parser_load = subparsers.add_parser('load', help='load links from csv (url,desc,tags)')
-    parser_load.set_defaults(func=load_links)
     parser_load.add_argument('csv_file', help='csv file (url,desc,tags)')
+    parser_load.set_defaults(func=load_links)
 
     parser_urls = subparsers.add_parser('urls', help='list all urls in insertion order')
     parser_urls.set_defaults(func=list_urls)
