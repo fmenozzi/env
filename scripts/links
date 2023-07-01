@@ -106,7 +106,7 @@ def list_links(args):
     if 'csv' in args and args.csv:
         for row in rows:
             (id, url, title, description, tags, date_added) = row
-            print(f'"{id}","{url}", "{title}", "{description}", "{tags}", "{date_added}"')
+            print(f'"{id}","{url}","{title}","{description}","{tags}","{date_added}"')
     else:
         print_result_table(rows)
 
@@ -177,7 +177,7 @@ def find_link(args):
     if args.csv:
         for row in rows:
             id, url, title, description, tags, date_added = row
-            print(f'"{id}","{url}", "{title}", "{description}", "{tags}", "{date_added}"')
+            print(f'"{id}","{url}","{title}","{description}","{tags}","{date_added}"')
     else:
         print_result_table(rows)
 
