@@ -35,6 +35,8 @@ restic
 ripgrep
 rustup
 signal-desktop
+sqlite
+sqlite-doc
 syncthing
 tldr
 tree
