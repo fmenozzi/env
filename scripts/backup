@@ -2,16 +2,15 @@
 
 set -euo pipefail
 
-BACKUP_INFO=/home/fed/.backup-info
+source "$BASH_PATH/restic.bash"
+
 EXCLUDE_FILE=/home/fed/.backup-exclude
 DEVICE=/dev/sdb
 DEVICE_NAME=AvaBackup
 MOUNT_DIR=/mnt/ava-backup
 SRC_DIR=/home/fed/fm
 DST_DIR_LOCAL=$MOUNT_DIR/backups/automatic/restic
-DST_DIR_REMOTE=s3:s3.us-east-005.backblazeb2.com/fm-backup-restic
-
-source <(sudo cat $BACKUP_INFO)
+DST_DIR_REMOTE="s3:s3.$(pass ava/AWS_DEFAULT_REGION).backblazeb2.com/fm-backup-restic"
 
 while getopts "hd" opt; do
     case $opt in

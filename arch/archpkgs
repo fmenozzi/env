@@ -24,6 +24,7 @@ neovim
 nvtop
 pacman-contrib
 pandoc
+pass
 progress
 python
 python-docs
