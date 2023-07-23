@@ -28,7 +28,8 @@ def get_name_from_path(path):
 
 def open(args):
     if 'name' in args and args.name:
-        path_note = get_path_to_note(args.name)
+        name = args.name.removesuffix('.md')
+        path_note = get_path_to_note(name)
     else:
         path_note = select_note()
 
