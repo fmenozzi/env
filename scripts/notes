@@ -4,7 +4,7 @@ import argparse
 import os
 import subprocess
 
-NOTES_DIR = '~/fm/notes/'
+NOTES_DIR = '/home/fed/fm/notes/'
 
 def select_note():
     cmd = f'fd md -t f {NOTES_DIR} | fzf --preview="mdcat {{}}"'
@@ -33,6 +33,8 @@ def open(args):
         path_note = select_note()
 
     if path_note:
+        dir_containing_note, _ = os.path.split(path_note)
+        os.makedirs(dir_containing_note, exist_ok=True)
         os.system(f'nvim {path_note}')
 
 def rm(args):
