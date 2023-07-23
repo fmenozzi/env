@@ -54,6 +54,7 @@ source ~/.config/nvim/plugins/delimitmate.vim
 source ~/.config/nvim/plugins/floaterm.vim
 source ~/.config/nvim/plugins/fzf.vim
 source ~/.config/nvim/plugins/gitgutter.vim
+source ~/.config/nvim/plugins/go.vim
 source ~/.config/nvim/plugins/kitty.vim
 source ~/.config/nvim/plugins/nerdtree.vim
 source ~/.config/nvim/plugins/nord.vim
