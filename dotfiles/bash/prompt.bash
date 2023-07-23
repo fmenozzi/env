@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Colors!
 txtblk='\e[0;30m' # Black - Regular
 txtred='\e[0;31m' # Red
@@ -33,7 +35,7 @@ bakcyn='\e[46m'   # Cyan
 bakwht='\e[47m'   # White
 txtrst='\e[0m'    # Text Reset
 
-source $BASH_PATH/git-prompt.sh
+source "$BASH_PATH/git-prompt.sh"
 
 export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWSTASHSTATE=1

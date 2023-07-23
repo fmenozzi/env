@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # "Alias" for "tmux a -t <session>" (with tab completion)
 ta() {
     local session_name="$1"

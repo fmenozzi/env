@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Setup fzf
 # ---------
 if [[ ! "$PATH" == *$DOTFILES_PATH/nvim/plugged/fzf/bin* ]]; then

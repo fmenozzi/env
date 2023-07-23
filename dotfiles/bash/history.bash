@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Don't put duplicate lines or lines starting with a space in the history.
 HISTCONTROL=ignoreboth
 
