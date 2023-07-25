@@ -4,7 +4,7 @@ set -euo pipefail
 
 source "$BASH_PATH/restic.bash"
 
-EXCLUDE_FILE=/home/fed/.backup-exclude
+EXCLUDE_FILE=/home/fed/fm/.backup_exclude
 DEVICE=/dev/sdb
 DEVICE_NAME=AvaBackup
 MOUNT_DIR=/mnt/ava-backup
