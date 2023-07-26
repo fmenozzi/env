@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# TODO: Figure out how to handle password stuff now that restic runs in background
+
+set -euo pipefail
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: rfb <path/to/restic/repo>"
+    exit 1
+fi
+
+repo="$1"
+mntpnt=$(mktemp -d)
+echo "latest repo snapshot at file://$mntpnt/snapshots/latest"
+restic -r "$repo" mount "$mntpnt"
+rmdir "$mntpnt"
