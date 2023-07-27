@@ -10,7 +10,7 @@ DEVICE_NAME=AvaBackup
 MOUNT_DIR=/mnt/ava-backup
 SRC_DIR=/home/fed/fm
 DST_DIR_LOCAL=$MOUNT_DIR/backups/automatic/restic
-DST_DIR_REMOTE="s3:s3.$(pass ava/AWS_DEFAULT_REGION).backblazeb2.com/fm-backup-restic"
+DST_DIR_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/fm"
 
 while getopts "hd" opt; do
     case $opt in
