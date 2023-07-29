@@ -4,13 +4,13 @@ set -euo pipefail
 
 source "$BASH_PATH/restic.bash"
 
-EXCLUDE_FILE=/home/fed/fm/.backup_exclude
+INCLUDE_FILE=/home/fed/fm/env/backup/ava/backup_include
+EXCLUDE_FILE=/home/fed/fm/env/backup/ava/backup_exclude
 DEVICE=/dev/sdb
 DEVICE_NAME=AvaBackup
 MOUNT_DIR=/mnt/ava-backup
-SRC_DIR=/home/fed/fm
-DST_DIR_LOCAL=$MOUNT_DIR/backups/automatic/restic
-DST_DIR_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/fm"
+REPO_LOCAL=$MOUNT_DIR/backups/automatic/home
+REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/home"
 
 while getopts "hd" opt; do
     case $opt in
@@ -25,8 +25,8 @@ while getopts "hd" opt; do
 done
 shift $((OPTIND-1))
 
-# Clean source directory first to ensure we don't back up e.g. build artifacts.
-clean "$SRC_DIR"
+# Clean fm directory first to ensure we don't back up e.g. build artifacts.
+clean /home/fed/fm/
 
 # Lock vault before backup.
 vault lock
@@ -39,10 +39,10 @@ sudo mount /dev/mapper/$DEVICE_NAME $MOUNT_DIR
 # Back up data dir via restic (local).
 if [ -v DRY_RUN ]; then
     echo "Starting local dry run..."
-    restic -r $DST_DIR_LOCAL --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup $SRC_DIR
+    restic -r $REPO_LOCAL --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
 else
     echo "Starting local restic backup..."
-    restic -r $DST_DIR_LOCAL --exclude-file=$EXCLUDE_FILE --verbose backup $SRC_DIR
+    restic -r $REPO_LOCAL --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
 fi
 
 # Unmount and lock LUKS device.
@@ -52,9 +52,9 @@ sudo cryptsetup close $DEVICE_NAME
 # Back up data dir via restic/backblaze b2 s3 API (remote).
 if [ -v DRY_RUN ]; then
     echo "Starting remote dry run..."
-    restic -r $DST_DIR_REMOTE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup $SRC_DIR
+    restic -r $REPO_REMOTE --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
 else
     echo "Starting remote restic backup..."
-    restic -r $DST_DIR_REMOTE --exclude-file=$EXCLUDE_FILE --verbose backup $SRC_DIR
+    restic -r $REPO_REMOTE --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
 fi
 
