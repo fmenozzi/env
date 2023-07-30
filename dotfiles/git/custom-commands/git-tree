@@ -52,7 +52,7 @@ class GitTree():
             self.colorprint('%s%s' % (indent, branch), 'green', False)
 
         for child in self.get_children(branch):
-            self.visit_tree(child, indent + ' ')
+            self.visit_tree(child, indent + '  ')
 
     def visit_rebase(self, branch):
         if branch != self.starting_branch:
