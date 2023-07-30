@@ -12,10 +12,13 @@ MOUNT_DIR=/mnt/ava-backup
 REPO_LOCAL=$MOUNT_DIR/backups/automatic/home
 REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/home"
 
-while getopts "hd" opt; do
+while getopts "hdl" opt; do
     case $opt in
         d)
             DRY_RUN=1
+            ;;
+        l)
+            LOCAL_ONLY=1
             ;;
         h | *)
             echo "Usage: backup [-h] [-d]"
@@ -48,6 +51,10 @@ fi
 # Unmount and lock LUKS device.
 sudo umount $MOUNT_DIR
 sudo cryptsetup close $DEVICE_NAME
+
+if [ -v LOCAL_ONLY ]; then
+    exit 0
+fi
 
 # Back up data dir via restic/backblaze b2 s3 API (remote).
 if [ -v DRY_RUN ]; then
