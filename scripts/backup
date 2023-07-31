@@ -4,8 +4,8 @@ set -euo pipefail
 
 source "$BASH_PATH/restic.bash"
 
-INCLUDE_FILE=/home/fed/fm/env/backup/ava/backup_include
-EXCLUDE_FILE=/home/fed/fm/env/backup/ava/backup_exclude
+INCLUDE_FILE=/home/fed/env/backup/ava/backup_include
+EXCLUDE_FILE=/home/fed/env/backup/ava/backup_exclude
 DEVICE=/dev/sdb
 DEVICE_NAME=AvaBackup
 MOUNT_DIR=/mnt/ava-backup
@@ -28,8 +28,8 @@ while getopts "hdl" opt; do
 done
 shift $((OPTIND-1))
 
-# Clean fm directory first to ensure we don't back up e.g. build artifacts.
-clean /home/fed/fm/
+# Clean home directory first to ensure we don't back up e.g. build artifacts.
+clean /home/fed/
 
 # Lock vault before backup.
 vault lock

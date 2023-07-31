@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-VAULT_PARENT_DIR=/home/fed/fm
+VAULT_PARENT_DIR=/home/fed
 VAULT_DIR_NAME=vault
 VAULT="$VAULT_PARENT_DIR/$VAULT_DIR_NAME"
 VAULT_GPGTAR_NAME=vault.gpgtar

@@ -4,7 +4,7 @@ import argparse
 import os
 import subprocess
 
-NOTES_DIR = '/home/fed/fm/notes/'
+NOTES_DIR = '/home/fed/documents/notes/'
 
 def select_note():
     cmd = f'fd md -t f {NOTES_DIR} | fzf --preview="mdcat {{}}"'
