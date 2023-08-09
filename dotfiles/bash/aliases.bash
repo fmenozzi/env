@@ -30,6 +30,7 @@ alias fd-all='fd --hidden --no-ignore'
 alias vpn='protonvpn-cli'
 alias pacoverview="pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'"
 alias screentearfix='xrandr --output HDMI-A-0 --set TearFree on && xrandr --output DisplayPort-0 --set TearFree on'
+alias acli='arduino-cli'
 
 # Extract from various archive types
 extract() {
