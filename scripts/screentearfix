@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+xrandr --output HDMI-A-0 --set TearFree on
+xrandr --output DisplayPort-0 --set TearFree on

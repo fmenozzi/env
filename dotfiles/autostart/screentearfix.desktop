@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=ScreenTearFix
+GenericName=Apply X screen tear fix for all displays
+Exec=/home/fed/env/scripts/screentearfix
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
