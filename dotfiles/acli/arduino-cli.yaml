@@ -1,6 +1,7 @@
 board_manager:
   additional_urls:
     - https://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
+    - https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json
 build_cache:
   compilations_before_purge: 10
   ttl: 720h0m0s
