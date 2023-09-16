@@ -3,6 +3,7 @@ at
 bash
 bash-completion
 bat
+bitwarden-cli
 duf
 dust
 exfatprogs
