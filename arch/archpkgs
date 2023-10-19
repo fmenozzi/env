@@ -15,6 +15,7 @@ fzf
 git
 git-delta
 htop
+inotify-tools
 jq
 kitty
 man-db
