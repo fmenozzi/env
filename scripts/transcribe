@@ -2,8 +2,7 @@
 
 set -euo pipefail
 
-WHISPER_CPP_DIR=/home/fed/whisper/whisper.cpp/
-WHISPER_MODEL="$WHISPER_CPP_DIR/models/ggml-large.bin"
+WHISPER_MODEL=/usr/share/whisper.cpp-model-large/large.bin
 TRANSCRIPTIONS_DIR=/home/fed/documents/voice_transcriptions/
 
 if [ "$#" -ne 1 ]; then
@@ -21,4 +20,4 @@ wav_audio_file_path="$tmp_dir/$input_audio_file_name".wav
 ffmpeg -i "$input_audio_file_path" -ar 16000 -ac 1 -c:a pcm_s16le "$wav_audio_file_path"
 
 # Run whisper.cpp on converted WAV file and output transcription text.
-"$WHISPER_CPP_DIR/main" -t 8 -m "$WHISPER_MODEL" -f "$wav_audio_file_path" --output-txt -of "$TRANSCRIPTIONS_DIR/$input_audio_file_name"
+whisper.cpp -t 8 -m "$WHISPER_MODEL" -f "$wav_audio_file_path" --output-txt -of "$TRANSCRIPTIONS_DIR/$input_audio_file_name"
