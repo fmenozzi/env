@@ -4,7 +4,8 @@ WATCH_DIR=/home/fed/syncthing/phone/voice_recordings/
 INCLUDE_PATTERN=".*\.m4a$"
 
 inotifywait -m "$WATCH_DIR" -e create -e moved_to  --include "$INCLUDE_PATTERN" |
+    grep --line-buffered -v ".*\.trashed-.*" |
     while read -r directory _action file; do
-        echo "[transcribe_watcher] transcribing $file..."
-        transcribe "$directory/$file" &
+        echo "transcribing $file..."
+        /home/fed/env/scripts/transcribe "$directory/$file" &
     done

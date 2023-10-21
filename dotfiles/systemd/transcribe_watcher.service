@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch voice recording directory for new files to transcribe
+Before=syncthing.service
+
+[Service]
+ExecStart=/home/fed/env/scripts/transcribe_watcher
+
+[Install]
+WantedBy=default.target
