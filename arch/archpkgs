@@ -38,6 +38,7 @@ reflector
 restic
 ripgrep
 rustup
+sd
 signal-desktop
 sqlite
 sqlite-doc
