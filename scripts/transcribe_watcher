@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 WATCH_DIR=/home/fed/syncthing/phone/voice_recordings/
+TRANSCRIPTIONS_DIR=/home/fed/documents/voice_transcriptions/
 INCLUDE_PATTERN=".*\.m4a$"
 
 inotifywait -m "$WATCH_DIR" -e create -e moved_to  --include "$INCLUDE_PATTERN" |
     grep --line-buffered -v ".*\.trashed-.*" |
     while read -r directory _action file; do
-        echo "transcribing $file..."
-        /home/fed/env/scripts/transcribe "$directory/$file" &
+        output_file_path="$TRANSCRIPTIONS_DIR/$(basename "$file" .m4a)"
+        echo "transcribing $file to $output_file_path..."
+        /home/fed/env/scripts/transcribe "$directory/$file" "$output_file_path" &
     done
