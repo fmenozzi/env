@@ -4,3 +4,4 @@ units
 whisper.cpp
 whisper.cpp-model-large
 whisper.cpp-model-base.en
+whisper.cpp-model-tiny.en
