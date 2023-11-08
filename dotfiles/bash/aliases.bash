@@ -32,6 +32,7 @@ alias fd-all='fd --hidden --no-ignore'
 alias vpn='protonvpn-cli'
 alias pacoverview="pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'"
 alias acli='arduino-cli'
+alias codellama='ollama run codellama:13b'
 
 # Extract from various archive types
 extract() {
