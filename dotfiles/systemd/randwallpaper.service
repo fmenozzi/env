@@ -1,0 +1,9 @@
+[Unit]
+Description=Choose a random wallpaper on startup
+
+[Service]
+Type=oneshot
+ExecStart=/home/fed/env/scripts/randwallpaper
+
+[Install]
+WantedBy=default.target
