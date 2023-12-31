@@ -6,9 +6,7 @@ source "$BASH_PATH/restic.bash"
 
 INCLUDE_FILE=/home/fed/env/backup/ava/backup_include
 EXCLUDE_FILE=/home/fed/env/backup/ava/backup_exclude
-DEVICE=/dev/sdb
-DEVICE_NAME=AvaBackup
-MOUNT_DIR=/mnt/ava-backup
+MOUNT_DIR=/mnt/ava-raid
 REPO_LOCAL=$MOUNT_DIR/backups/automatic/home
 REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/home"
 
@@ -34,12 +32,7 @@ clean /home/fed/
 # Lock vault before backup.
 vault lock
 
-# Unlock LUKS device and mount.
-echo "$DISK_PASSWORD" | sudo cryptsetup open $DEVICE $DEVICE_NAME -
-sudo mkdir -p $MOUNT_DIR
-sudo mount /dev/mapper/$DEVICE_NAME $MOUNT_DIR
-
-# Back up data dir via restic (local).
+# Perform local backup.
 if [ -v DRY_RUN ]; then
     echo "Starting local dry run..."
     restic -r $REPO_LOCAL --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
@@ -48,20 +41,16 @@ else
     restic -r $REPO_LOCAL --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
 fi
 
-# Unmount and lock LUKS device.
-sudo umount $MOUNT_DIR
-sudo cryptsetup close $DEVICE_NAME
-
 if [ -v LOCAL_ONLY ]; then
     exit 0
 fi
 
-# Back up data dir via restic/backblaze b2 s3 API (remote).
+# Perform remote backup.
 if [ -v DRY_RUN ]; then
     echo "Starting remote dry run..."
-    restic -r $REPO_REMOTE --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
+    restic -r "$REPO_REMOTE" --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
 else
     echo "Starting remote restic backup..."
-    restic -r $REPO_REMOTE --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
+    restic -r "$REPO_REMOTE" --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
 fi
 

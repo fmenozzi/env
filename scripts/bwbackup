@@ -4,19 +4,12 @@ set -euo pipefail
 
 source "$BASH_PATH/bitwarden.bash"
 
-DISK_PASSWORD="$(pass ava/DISK_PASSWORD)"
-DEVICE=/dev/sdb
-DEVICE_NAME=AvaBackup
-MOUNT_DIR=/mnt/ava-backup
+MOUNT_DIR=/mnt/ava-raid
 RESTIC_PASSWORD="$(pass ava/RESTIC_PASSWORD)"
 REPO_LOCAL=$MOUNT_DIR/backups/automatic/bw
 REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/bw"
 
 export RESTIC_PASSWORD
-
-echo "$DISK_PASSWORD" | sudo cryptsetup open $DEVICE $DEVICE_NAME -
-sudo mkdir -p $MOUNT_DIR
-sudo mount /dev/mapper/$DEVICE_NAME $MOUNT_DIR
 
 echo "Logging in..."
 bw login --apikey --raw
@@ -29,9 +22,6 @@ bw sync
 
 echo "Backing up vault (local)..."
 bw export --raw --format json --session "$BW_SESSION_KEY" | restic -r "$REPO_LOCAL" backup --stdin --stdin-filename vault.json
-
-sudo umount $MOUNT_DIR
-sudo cryptsetup close $DEVICE_NAME
 
 echo "Backing up vault (remote)..."
 bw export --raw --format json --session "$BW_SESSION_KEY" | restic -r "$REPO_REMOTE" backup --stdin --stdin-filename vault.json

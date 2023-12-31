@@ -4,20 +4,9 @@ set -euo pipefail
 
 source "$BASH_PATH/restic.bash"
 
-DEVICE=/dev/sdb
-DEVICE_NAME=AvaBackup
-MOUNT_DIR=/mnt/ava-backup
+MOUNT_DIR=/mnt/ava-raid
 REPO=$MOUNT_DIR/backups/automatic/home
 TARGET=/home/fed/home-restore
 
-# Unlock LUKS device and mount.
-echo $DISK_PASSWORD | sudo cryptsetup open $DEVICE $DEVICE_NAME -
-sudo mkdir -p $MOUNT_DIR
-sudo mount /dev/mapper/$DEVICE_NAME $MOUNT_DIR
-
 # Restore from restic backup.
 restic -r $REPO --verbose restore latest --target $TARGET
-
-# Unmount and lock LUKS device.
-sudo umount $MOUNT_DIR
-sudo cryptsetup close $DEVICE_NAME
