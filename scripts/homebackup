@@ -4,8 +4,8 @@ set -euo pipefail
 
 source "$BASH_PATH/restic.bash"
 
-INCLUDE_FILE=/home/fed/env/backup/ava/backup_include
-EXCLUDE_FILE=/home/fed/env/backup/ava/backup_exclude
+INCLUDE_FILE=/home/fed/env/backup/ava/home/backup_include
+EXCLUDE_FILE=/home/fed/env/backup/ava/home/backup_exclude
 MOUNT_DIR=/mnt/ava-raid
 REPO_LOCAL=$MOUNT_DIR/backups/automatic/home
 REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/home"
