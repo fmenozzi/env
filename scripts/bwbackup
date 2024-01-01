@@ -20,10 +20,10 @@ BW_SESSION_KEY=$(bw unlock --raw --passwordenv BW_PASSWORD)
 echo "Syncing vault..."
 bw sync
 
-echo "Backing up vault (local)..."
+echo "Backing up vault locally to $REPO_LOCAL..."
 bw export --raw --format json --session "$BW_SESSION_KEY" | restic -r "$REPO_LOCAL" backup --stdin --stdin-filename vault.json
 
-echo "Backing up vault (remote)..."
+echo "Backing up vault remotely to $REPO_REMOTE..."
 bw export --raw --format json --session "$BW_SESSION_KEY" | restic -r "$REPO_REMOTE" backup --stdin --stdin-filename vault.json
 
 echo "Logging out..."

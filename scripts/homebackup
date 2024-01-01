@@ -34,10 +34,10 @@ vault lock
 
 # Perform local backup.
 if [ -v DRY_RUN ]; then
-    echo "Starting local dry run..."
+    echo "Starting local dry run backup to $REPO_LOCAL..."
     restic -r $REPO_LOCAL --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
 else
-    echo "Starting local restic backup..."
+    echo "Starting local restic backup to $REPO_LOCAL..."
     restic -r $REPO_LOCAL --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
 fi
 
@@ -47,10 +47,10 @@ fi
 
 # Perform remote backup.
 if [ -v DRY_RUN ]; then
-    echo "Starting remote dry run..."
+    echo "Starting remote dry run backup to $REPO_REMOTE..."
     restic -r "$REPO_REMOTE" --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
 else
-    echo "Starting remote restic backup..."
+    echo "Starting remote restic backup to $REPO_REMOTE..."
     restic -r "$REPO_REMOTE" --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
 fi
 

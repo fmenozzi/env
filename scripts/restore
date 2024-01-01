@@ -9,4 +9,5 @@ REPO=$MOUNT_DIR/backups/automatic/home
 TARGET=/home/fed/home-restore
 
 # Restore from restic backup.
+echo "restoring backup from $REPO to $TARGET..."
 restic -r $REPO --verbose restore latest --target $TARGET
