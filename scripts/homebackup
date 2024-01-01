@@ -2,55 +2,40 @@
 
 set -euo pipefail
 
-source "$BASH_PATH/restic.bash"
-
-INCLUDE_FILE=/home/fed/env/backup/ava/home/backup_include
-EXCLUDE_FILE=/home/fed/env/backup/ava/home/backup_exclude
-MOUNT_DIR=/mnt/ava-raid
-REPO_LOCAL=$MOUNT_DIR/backups/automatic/home
+REPO_LOCAL=/mnt/ava-raid/backups/automatic/home
 REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/home"
 
 while getopts "hdl" opt; do
     case $opt in
         d)
-            DRY_RUN=1
+            dry_run=1
             ;;
         l)
-            LOCAL_ONLY=1
+            local_only=1
             ;;
         h | *)
-            echo "Usage: backup [-h] [-d]"
+            echo "Usage: homebackup [-h] [-d]"
             exit 0
             ;;
     esac
 done
 shift $((OPTIND-1))
 
-# Clean home directory first to ensure we don't back up e.g. build artifacts.
-clean /home/fed/
+config="$ENV_PATH/backup/ava_home.bash"
 
-# Lock vault before backup.
-vault lock
-
-# Perform local backup.
-if [ -v DRY_RUN ]; then
-    echo "Starting local dry run backup to $REPO_LOCAL..."
-    restic -r $REPO_LOCAL --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
+if [ -v dry_run ]; then
+    rbackup -r "$REPO_LOCAL" -c "$config" -d
 else
-    echo "Starting local restic backup to $REPO_LOCAL..."
-    restic -r $REPO_LOCAL --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
+    rbackup -r "$REPO_LOCAL" -c "$config"
 fi
 
-if [ -v LOCAL_ONLY ]; then
+if [ -v local_only ]; then
     exit 0
 fi
 
-# Perform remote backup.
-if [ -v DRY_RUN ]; then
-    echo "Starting remote dry run backup to $REPO_REMOTE..."
-    restic -r "$REPO_REMOTE" --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --dry-run --verbose backup
+if [ -v dry_run ]; then
+    rbackup -r "$REPO_REMOTE" -c "$config" -d
 else
-    echo "Starting remote restic backup to $REPO_REMOTE..."
-    restic -r "$REPO_REMOTE" --files-from=$INCLUDE_FILE --exclude-file=$EXCLUDE_FILE --verbose backup
+    rbackup -r "$REPO_REMOTE" -c "$config"
 fi
 

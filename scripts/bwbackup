@@ -4,9 +4,8 @@ set -euo pipefail
 
 source "$BASH_PATH/bitwarden.bash"
 
-MOUNT_DIR=/mnt/ava-raid
 RESTIC_PASSWORD="$(pass ava/RESTIC_PASSWORD)"
-REPO_LOCAL=$MOUNT_DIR/backups/automatic/bw
+REPO_LOCAL=/mnt/ava-raid/backups/automatic/bw
 REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/bw"
 
 export RESTIC_PASSWORD
@@ -20,10 +19,10 @@ BW_SESSION_KEY=$(bw unlock --raw --passwordenv BW_PASSWORD)
 echo "Syncing vault..."
 bw sync
 
-echo "Backing up vault locally to $REPO_LOCAL..."
+echo "Backing up vault to $REPO_LOCAL..."
 bw export --raw --format json --session "$BW_SESSION_KEY" | restic -r "$REPO_LOCAL" backup --stdin --stdin-filename vault.json
 
-echo "Backing up vault remotely to $REPO_REMOTE..."
+echo "Backing up vault to $REPO_REMOTE..."
 bw export --raw --format json --session "$BW_SESSION_KEY" | restic -r "$REPO_REMOTE" backup --stdin --stdin-filename vault.json
 
 echo "Logging out..."

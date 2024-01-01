@@ -2,10 +2,8 @@
 
 set -euo pipefail
 
-source "$BASH_PATH/restic.bash"
-
-MOUNT_DIR=/mnt/ava-raid
-REPO=$MOUNT_DIR/backups/automatic/home
+RESTIC_PASSWORD="$(pass ava/RESTIC_PASSWORD)"
+REPO=/mnt/ava-raid/backups/automatic/home
 TARGET=/home/fed/home-restore
 
 # Restore from restic backup.

@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+    echo "usage: $0 [-h] [-d] -r <restic repo path> -c <bash config path>" 1>&2
+}
+
+while getopts "hdr:c:" opt; do
+    case $opt in
+        h)
+            usage
+            exit 0
+            ;;
+        d)
+            dry_run=1
+            ;;
+        r)
+            repo=$OPTARG
+            ;;
+        c)
+            config=$OPTARG
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ ! -v repo ]; then
+    echo "must provide repo path with -r"
+    exit 1
+fi
+if [ ! -v config ]; then
+    echo "must provide bash config path with -c"
+    exit 1
+fi
+
+if [ ! -f "$config" ]; then
+    echo "bash config file does not exist: $config"
+    exit 1
+fi
+
+# The config is basically just a bash script that exports key environment
+# variables and optionally runs other code that might be needed for a specific
+# backup scenario.
+#
+# The required variables are:
+#   BACKUP_INCLUDE
+#       array of paths to include in the backup
+#
+# The optional environment variables are:
+#   RESTIC_PASSWORD
+#       password for the repo; if this does not exist then restic will prompt
+#       for the password
+#   BACKUP_EXCLUDE
+#       array of paths to exclude from the backup
+source "$config"
+
+if [ ! -v BACKUP_INCLUDE ]; then
+    echo "BACKUP_INCLUDE empty or not defined, aborting"
+    exit 1
+fi
+
+if [ -v dry_run ]; then
+    echo "starting dry run backup to $repo..."
+    restic -r "$repo"                                           \
+        --files-from=<(printf "%s\n" "${BACKUP_INCLUDE[@]}")    \
+        --exclude-file=<(printf "%s\n" "${BACKUP_EXCLUDE[@]}")  \
+        --dry-run --verbose backup
+else
+    echo "starting backup to $repo..."
+    restic -r "$repo"                                           \
+        --files-from=<(printf "%s\n" "${BACKUP_INCLUDE[@]}")    \
+        --exclude-file=<(printf "%s\n" "${BACKUP_EXCLUDE[@]}")  \
+        --verbose backup
+fi
+
