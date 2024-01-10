@@ -174,6 +174,8 @@ def find_link(args):
     con.close()
     if not rows:
         return
+    if args.sort == 'date':
+        rows.sort(key=lambda row: row[5]) # date_added
     if args.csv:
         for row in rows:
             id, url, title, description, tags, date_added = row
@@ -298,6 +300,7 @@ if __name__ == '__main__':
     parser_find = subparsers.add_parser('find', help='find links')
     parser_find.add_argument('query', nargs='?', help='search query')
     parser_find.add_argument('--csv', action='store_true', help='display in csv format')
+    parser_find.add_argument('--sort', choices=['relevance', 'date'], default='relevance', help='sort results')
     parser_find.set_defaults(func=find_link)
 
     parser_open = subparsers.add_parser('open', help='open links in browser')
