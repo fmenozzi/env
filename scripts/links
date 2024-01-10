@@ -114,7 +114,18 @@ def add_link(args):
     con, cur = create_or_open_db()
     title = get_title_from_url(args.url)
     description = args.description if args.description else ''
-    tags = args.tags if args.tags else ''
+    if args.tags:
+        tags = args.tags
+    else:
+        res = cur.execute('SELECT tags FROM links;')
+        rows = res.fetchall()
+        all_tags = set()
+        for row in rows:
+            comma_separated_tags, = row
+            tags_list = comma_separated_tags.split(',')
+            for tag in tags_list:
+                all_tags.add(tag)
+        tags = pyutils.fzf(sorted(all_tags), '--height=12 --multi').replace('\n', ',')
     query = '''
         INSERT INTO links (rowid, url, title, description, tags, date_added)
         VALUES (NULL, ?, ?, ?, ?, ?);
