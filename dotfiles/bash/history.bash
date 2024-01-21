@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Don't put duplicate lines or lines starting with a space in the history.
-HISTCONTROL=ignoreboth
+# Ignore commands with leading space and remove duplicate entries.
+HISTCONTROL=erasedups:ignorespace
 
 # Append to history file instead of overwriting it.
 shopt -s histappend
