@@ -39,6 +39,20 @@ def link_exists(link_id):
     con.close()
     return count == 1
 
+def fetch_tags_rows():
+    con, cur = create_or_open_db()
+    res = cur.execute('SELECT tags FROM links;')
+    rows = res.fetchall()
+    con.close()
+    return [row[0] for row in rows]
+
+def fetch_all_tags():
+    tags = set()
+    for comma_separated_tags in fetch_tags_rows():
+        for tag in comma_separated_tags.split(','):
+            tags.add(tag)
+    return list(sorted(tags))
+
 def now_utc():
     return datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
 
@@ -111,21 +125,13 @@ def list_links(args):
         print_result_table(rows)
 
 def add_link(args):
-    con, cur = create_or_open_db()
     title = get_title_from_url(args.url)
     description = args.description if args.description else ''
     if args.tags:
         tags = args.tags
     else:
-        res = cur.execute('SELECT tags FROM links;')
-        rows = res.fetchall()
-        all_tags = set()
-        for row in rows:
-            comma_separated_tags, = row
-            tags_list = comma_separated_tags.split(',')
-            for tag in tags_list:
-                all_tags.add(tag)
-        tags = pyutils.fzf(sorted(all_tags), '--height=12 --multi').replace('\n', ',')
+        tags = pyutils.fzf(fetch_all_tags(), '--height=12 --multi').replace('\n', ',')
+    con, cur = create_or_open_db()
     query = '''
         INSERT INTO links (rowid, url, title, description, tags, date_added)
         VALUES (NULL, ?, ?, ?, ?, ?);
@@ -252,9 +258,11 @@ def list_urls(args):
         print(f'{url}')
 
 def list_tags(args):
-    con, cur = create_or_open_db()
     if args.query:
+        # TODO: Consider whether we should instead allow the match query to be
+        #       used directly as-passed (e.g. links tags '"tag1" OR "tag2"')
         match = ' '.join([f'"{tag.strip()}"' for tag in args.query.split(',')])
+        con, cur = create_or_open_db()
         res = cur.execute("SELECT rowid, url, tags FROM links_fts WHERE tags MATCH ?", (match,))
         rows = res.fetchall()
         con.close()
@@ -262,15 +270,10 @@ def list_tags(args):
         for row in rows:
             print(row)
         return
-    res = cur.execute('SELECT id, url, tags FROM links;')
-    rows = res.fetchall()
-    con.close()
     if args.histogram:
         tags = {}
-        for row in rows:
-            _, _, comma_separated_tags = row
-            tags_list = comma_separated_tags.split(',')
-            for tag in tags_list:
+        for comma_separated_tags in fetch_tags_rows():
+            for tag in comma_separated_tags.split(','):
                 if tag not in tags:
                     tags[tag] = 1
                 else:
@@ -280,14 +283,8 @@ def list_tags(args):
             print(f'{tag}, {tag_histogram[tag]}')
     else:
         # Simply print all tags alphabetically.
-        tags = set()
-        for row in rows:
-            id, url, comma_separated_tags = row
-            tags_list = comma_separated_tags.split(',')
-            for tag in tags_list:
-                tags.add(tag)
-        for tag in sorted(tags):
-            print(f'{tag}')
+        for tag in fetch_all_tags():
+            print(tag)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
