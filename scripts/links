@@ -253,6 +253,15 @@ def list_urls(args):
 
 def list_tags(args):
     con, cur = create_or_open_db()
+    if args.query:
+        match = ' '.join([f'"{tag.strip()}"' for tag in args.query.split(',')])
+        res = cur.execute("SELECT rowid, url, tags FROM links_fts WHERE tags MATCH ?", (match,))
+        rows = res.fetchall()
+        con.close()
+        # TODO: print nice table like for find
+        for row in rows:
+            print(row)
+        return
     res = cur.execute('SELECT id, url, tags FROM links;')
     rows = res.fetchall()
     con.close()
@@ -269,8 +278,6 @@ def list_tags(args):
         tag_histogram = {tag: count for tag, count in sorted(tags.items(), key=lambda item: item[1], reverse=True)}
         for tag in tag_histogram:
             print(f'{tag}, {tag_histogram[tag]}')
-    elif args.table:
-        print('UNIMPLEMENTED')
     else:
         # Simply print all tags alphabetically.
         tags = set()
@@ -327,8 +334,8 @@ if __name__ == '__main__':
 
     parser_tags = subparsers.add_parser('tags', help='list all tags alphabetically')
     parser_tags_group = parser_tags.add_mutually_exclusive_group()
+    parser_tags_group.add_argument('query', nargs='?', help='find entries with tags matching query')
     parser_tags_group.add_argument('--histogram', action='store_true', help='show tags and counts')
-    parser_tags_group.add_argument('-t', '--table', action='store_true', help='show ids, urls, tags')
     parser_tags.set_defaults(func=list_tags)
 
     args = parser.parse_args()
