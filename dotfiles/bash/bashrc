@@ -15,6 +15,9 @@ shopt -s checkwinsize
 # Make less more friendly for non-text input files.
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gcr/ssh
+export SSH_AUTH_SOCK
+
 export ENV_PATH=~/env
 export DOTFILES_PATH="$ENV_PATH/dotfiles"
 
