@@ -3,6 +3,9 @@
 set -eo pipefail
 
 # These mime types will be opened via xdg-open instead of vim.
+#
+# TODO: ideally we would detect if there's a program to open a file of a certain
+#       mime type and just use that and only afterwards fall back to vim
 XDG_OPEN_MIME_TYPES=(
     'application/pdf'
     'application/xhtml+xml'
@@ -12,6 +15,7 @@ XDG_OPEN_MIME_TYPES=(
     'image/gif'
     'image/svg'
     'image/svg+xml'
+    'image/webp'
     'audio/mpeg'
     'audio/x-wav'
     'audio/x-vorbis+ogg'
