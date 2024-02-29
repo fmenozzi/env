@@ -64,6 +64,9 @@ source ~/.config/nvim/plugins/ycm.vim
 
 call plug#end()
 
+" Don't open vim-plug command windows in new split.
+let g:plug_window = 'enew'
+
 colorscheme nord
 
 syntax enable
