@@ -9,10 +9,10 @@ parser.add_argument("url", help="YouTube video URL")
 args = parser.parse_args()
 
 print('downloading video...')
-pyutils.sh(f'yt-dlp --write-info-json -o "video.%(ext)s" {args.url}')
+pyutils.sh(f'yt-dlp --write-info-json --write-thumbnail -o "video.%(ext)s" {args.url}')
 
 print('extracting metadata...')
-metadata, _, _ = pyutils.sh('jq "{chapters: .chapters, ext: .ext}" video.info.json')
+metadata, _, _ = pyutils.sh('jq "{chapters, ext}" video.info.json')
 metadata_json = json.loads(metadata)
 ext = metadata_json['ext']
 for ch in metadata_json['chapters']:
