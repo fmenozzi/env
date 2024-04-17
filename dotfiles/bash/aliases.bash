@@ -35,6 +35,7 @@ alias acli='arduino-cli'
 alias codellama='ollama run codellama:13b'
 alias llm='ollama run'
 alias mon='btm'
+alias wiki='nvim +WikiIndex'
 
 # Extract from various archive types
 extract() {
