@@ -8,14 +8,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument("url", help="YouTube video URL")
 args = parser.parse_args()
 
-print('downloading video...')
-pyutils.sh(f'yt-dlp --write-info-json --write-thumbnail -o "video.%(ext)s" {args.url}')
+print('downloading audio...')
+ext = 'flac'
+pyutils.sh(f'yt-dlp -x --audio-format {ext} --write-info-json --embed-thumbnail -o "audio.%(ext)s" {args.url}')
 
 print('extracting metadata...')
-metadata, _, _ = pyutils.sh('jq "{chapters, ext}" video.info.json')
+metadata, _, _ = pyutils.sh('jq .chapters audio.info.json')
 metadata_json = json.loads(metadata)
-ext = metadata_json['ext']
-for ch in metadata_json['chapters']:
+for ch in metadata_json:
     title, start, end = ch['title'], ch['start_time'], ch['end_time']
     print(f'extracting track {title}.ogg...')
-    pyutils.sh(f'ffmpeg -nostdin -i video.{ext} -ss {start} -to {end} -vn -c:a copy "{title}.ogg"')
+    pyutils.sh(f'ffmpeg -nostdin -i audio.{ext} -ss {start} -to {end} -c:a libopus "{title}.ogg"')
