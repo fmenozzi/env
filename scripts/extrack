@@ -1,34 +1,73 @@
-#!/usr/bin/env python3
+#!/usr/bin/env bash
 
-import argparse
-import json
-import pyutils
+set -euo pipefail
 
-def extract_from_video(url):
-    print('downloading audio from video...')
-    ext = 'flac'
-    pyutils.sh(f'yt-dlp -x --audio-format {ext} --write-info-json --embed-thumbnail -o "audio.%(ext)s" {url}')
+if [ "$#" -ne 1 ]; then
+    echo "usage: extrack <url>"
+    exit 1
+fi
 
-    print('extracting chapter metadata...')
-    metadata, _, _ = pyutils.sh('jq .chapters audio.info.json')
-    metadata_json = json.loads(metadata)
-    for ch in metadata_json:
-        title, start, end = ch['title'], ch['start_time'], ch['end_time']
-        print(f'extracting track {title}.ogg...')
-        pyutils.sh(f'ffmpeg -nostdin -i audio.{ext} -ss {start} -to {end} -c:a libopus "{title}.ogg"')
+if ! command -v yt-dlp &> /dev/null; then
+    echo "could not find yt-dlp in PATH, exiting"
+    exit 1
+fi
 
-def extract_from_playlist(url):
-    print('downloading audio from playlist...')
-    ext = 'flac'
-    pyutils.sh(f'yt-dlp -x --audio-format {ext} --embed-thumbnail -o "%(playlist_index)s - %(title)s.%(ext)s" {url}')
+if ! command -v ffmpeg &> /dev/null; then
+    echo "could not find ffmpeg in PATH, exiting"
+    exit 1
+fi
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("url", help="YouTube video URL")
-    args = parser.parse_args()
+url="$1"
 
-    if 'playlist' in args.url:
-        extract_from_playlist(args.url)
-    else:
-        extract_from_video(args.url)
+if grep -Fqm1 "playlist" <(echo "$url"); then
+    # Playlist, extract audio from each video in playlist.
+    echo "downloading audio from playlist videos..."
+    yt-dlp                                          \
+        -x --audio-format flac                      \
+        --embed-thumbnail                           \
+        -q --progress --newline                     \
+        --progress-template "%(info.playlist_index)s / %(info.playlist_count)s %(info.title)s %(progress._default_template)s" \
+        -o "%(playlist_index)s - %(title)s.%(ext)s" \
+        "$url"
 
+    mkdir -p tracks
+    for file in *.flac; do
+        echo "converting $file to opus..."
+        ffmpeg                                      \
+            -n -nostdin -loglevel panic             \
+            -i "$file"                              \
+            -c:a libopus                            \
+            "tracks/$(basename "$file" .flac).ogg"
+    done
+else
+    # Not a playlist, extract audio from each chapter.
+    if ! command -v jq &> /dev/null; then
+        echo "could not find jq in PATH, exiting"
+        exit 1
+    fi
+
+    echo "downloading audio from video..."
+    yt-dlp                      \
+        -x --audio-format flac  \
+        --write-info-json       \
+        --embed-thumbnail       \
+        -q --progress --newline \
+        -o "audio.%(ext)s"      \
+        "$url"
+
+    mkdir -p tracks
+    max_idx=$(jq -r '.chapters | length - 1' audio.info.json)
+    for i in $(seq 0 $max_idx); do
+        title=$(jq -r ".chapters[$i].title" audio.info.json)
+        start=$(jq -r ".chapters[$i].start_time" audio.info.json)
+        end=$(jq -r ".chapters[$i].end_time" audio.info.json)
+
+        echo "extracting track $title.ogg..."
+        ffmpeg                              \
+            -n -nostdin -loglevel panic     \
+            -i "audio.flac"                 \
+            -ss "$start" -to "$end"         \
+            -c:a libopus                    \
+            "tracks/$title.ogg"
+    done
+fi
