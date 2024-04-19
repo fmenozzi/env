@@ -4,18 +4,31 @@ import argparse
 import json
 import pyutils
 
-parser = argparse.ArgumentParser()
-parser.add_argument("url", help="YouTube video URL")
-args = parser.parse_args()
+def extract_from_video(url):
+    print('downloading audio from video...')
+    ext = 'flac'
+    pyutils.sh(f'yt-dlp -x --audio-format {ext} --write-info-json --embed-thumbnail -o "audio.%(ext)s" {url}')
 
-print('downloading audio...')
-ext = 'flac'
-pyutils.sh(f'yt-dlp -x --audio-format {ext} --write-info-json --embed-thumbnail -o "audio.%(ext)s" {args.url}')
+    print('extracting chapter metadata...')
+    metadata, _, _ = pyutils.sh('jq .chapters audio.info.json')
+    metadata_json = json.loads(metadata)
+    for ch in metadata_json:
+        title, start, end = ch['title'], ch['start_time'], ch['end_time']
+        print(f'extracting track {title}.ogg...')
+        pyutils.sh(f'ffmpeg -nostdin -i audio.{ext} -ss {start} -to {end} -c:a libopus "{title}.ogg"')
 
-print('extracting metadata...')
-metadata, _, _ = pyutils.sh('jq .chapters audio.info.json')
-metadata_json = json.loads(metadata)
-for ch in metadata_json:
-    title, start, end = ch['title'], ch['start_time'], ch['end_time']
-    print(f'extracting track {title}.ogg...')
-    pyutils.sh(f'ffmpeg -nostdin -i audio.{ext} -ss {start} -to {end} -c:a libopus "{title}.ogg"')
+def extract_from_playlist(url):
+    print('downloading audio from playlist...')
+    ext = 'flac'
+    pyutils.sh(f'yt-dlp -x --audio-format {ext} --embed-thumbnail -o "%(playlist_index)s - %(title)s.%(ext)s" {url}')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("url", help="YouTube video URL")
+    args = parser.parse_args()
+
+    if 'playlist' in args.url:
+        extract_from_playlist(args.url)
+    else:
+        extract_from_video(args.url)
+
