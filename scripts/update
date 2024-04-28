@@ -2,6 +2,6 @@
 
 set -e
 
-paru
+paru -Syu --newsonupgrade
 
 nvim +PlugUpdate
