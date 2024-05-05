@@ -36,6 +36,7 @@ alias codellama='ollama run codellama:13b'
 alias llm='ollama run'
 alias mon='btm'
 alias wiki='nvim +WikiIndex'
+alias kp='keepassxc-cli'
 
 # Extract from various archive types
 extract() {
