@@ -37,6 +37,7 @@ progress
 python
 python-docs
 python-pynvim
+ranger
 rclone
 rebuild-detector
 reflector
