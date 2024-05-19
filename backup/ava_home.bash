@@ -23,8 +23,6 @@ BACKUP_INCLUDE=(
     /home/fed/scratch/
     /home/fed/syncthing/
     /home/fed/videos/
-    /home/fed/LIFE_TODO
-    /home/fed/TODO
     /home/fed/vault.gpgtar
     /home/fed/.bash_history
     /home/fed/.config/
