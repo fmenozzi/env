@@ -1,0 +1,7 @@
+[manager]
+ratio = [1, 3, 4]
+
+[opener]
+edit = [
+    { run = '${EDITOR:=nvim} "$@"', block = true, for = 'unix' }
+]
