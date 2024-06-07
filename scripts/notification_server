@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+import argparse
+import http.server
+import json
+import pyutils
+import urllib
+
+class RequestHandler(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        url = urllib.parse.urlparse(self.path)
+        data = self.rfile.read(int(self.headers.get('Content-Length', 0))).decode('utf-8')
+        data = json.loads(data)
+        icon, urgency, title, body = data['icon'], data['urgency'], data['title'], data['body']
+        out, err, rc = pyutils.sh(f'notify-send -i {icon} -u {urgency} "{title}" "{body}"')
+
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({}).encode('utf-8'))
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--port', type=int, help='HTTP server port')
+    args = parser.parse_args()
+
+    with http.server.HTTPServer(('localhost', port), RequestHandler) as server:
+        print(f'starting notification server on port {port}...')
+        server.serve_forever()
