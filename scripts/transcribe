@@ -30,3 +30,8 @@ ffmpeg -i "$input_audio_file_path" -ar 16000 -ac 1 -c:a pcm_s16le "$wav_audio_fi
 # Run whisper.cpp on converted WAV file and output transcription text.
 # TODO: whisper.cpp automatically adds .txt extension, possible to change that?
 whisper.cpp -t 8 -m "$WHISPER_MODEL" -f "$wav_audio_file_path" --output-txt -of "$output_transcription_file_path"
+
+# Desktop notification on completion.
+export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/1000/bus}"
+preview="$(head -c 30 "$output_transcription_file_path")..."
+notify-send -i audio-input-microphone -u critical "New Voice Transcription" "$preview"
