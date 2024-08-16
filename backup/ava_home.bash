@@ -38,6 +38,8 @@ BACKUP_EXCLUDE=(
     /home/fed/env/dotfiles/nvim/plugged/
     /home/fed/.local/share/Steam/
     /home/fed/.local/share/Trash
+    /home/fed/.local/share/TelegramDesktop
+    /home/fed/.config/chromium
 )
 
 export RESTIC_PASSWORD BACKUP_INCLUDE BACKUP_EXCLUDE
