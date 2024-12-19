@@ -6,14 +6,12 @@ nmap <leader>wf :WikiPages<cr>
 nmap <leader>wt :WikiTags<cr>
 nmap <leader>wc :WikiToc<cr>
 
-" When creating links from text under the cursor, convert to lowercase and
-" replace spaces with dashes.
+" When creating links from text under the cursor, convert to lowercase,
+" replace spaces with dashes, and URL-encode the result.
 let g:wiki_link_creation = {
             \ 'md': {
-            \   'link_type': 'md',
-            \   'url_extension': '.md',
             \   'url_transform': { x ->
-            \       substitute(tolower(x), '\s\+', '-', 'g') },
+            \       wiki#url#utils#url_encode_specific(substitute(tolower(x), '\s\+', '-', 'g'), '()') },
             \ },
             \}
 
