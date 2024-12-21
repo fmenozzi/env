@@ -5,6 +5,8 @@ let g:wiki_root = '~/documents/notes'
 nmap <leader>wf :WikiPages<cr>
 nmap <leader>wt :WikiTags<cr>
 nmap <leader>wc :WikiToc<cr>
+nmap <leader>wh :WikiLinkFollowSplit<cr>
+nmap <leader>wv :vert WikiLinkFollowSplit<cr>
 
 " When creating links from text under the cursor, convert to lowercase,
 " replace spaces with dashes, and URL-encode the result.
