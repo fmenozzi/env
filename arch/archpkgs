@@ -44,6 +44,7 @@ ripgrep
 rustup
 sd
 signal-desktop
+strace
 sqlite
 sqlite-doc
 syncthing
