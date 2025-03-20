@@ -1,8 +1,13 @@
 theme = "nord"
 
 [editor]
+bufferline = "multiple"
 cursorline = true
 true-color = true
+end-of-line-diagnostics = "hint"
+
+[editor.inline-diagnostics]
+cursor-line = "error"
 
 [editor.cursor-shape]
 insert = "bar"
@@ -16,10 +21,25 @@ mode.normal = "NORMAL"
 mode.insert = "INSERT"
 mode.select = "SELECT"
 
+# Tab in insert will actually tab the cursor.
+[editor.smart-tab]
+enable = false
+
+# jj instead of Esc to enter normal mode.
+[keys.insert]
+j = { j = "normal_mode" }
+
 # Use Shift-x to unselect lines (or select upwards).
+# Use Alt-, and Alt-. to navigate buffers. Rebind repeat_last_motion, since
+# Alt-. defaults to that action.
+# Alt-w to close current buffer.
 [keys.normal]
 A-x = "extend_to_line_bounds"
 X = "select_line_above"
+"A-," = "goto_previous_buffer"
+"A-." = "goto_next_buffer"
+"A-/" = "repeat_last_motion"
+"A-w" = ":buffer-close"
 [keys.select]
 A-x = "extend_to_line_bounds"
 X = "select_line_above"

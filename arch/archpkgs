@@ -17,6 +17,7 @@ fuse2
 fzf
 git
 git-delta
+helix
 htop
 inotify-tools
 jq
@@ -55,3 +56,4 @@ vi
 vim
 yt-dlp
 words
+xsel
