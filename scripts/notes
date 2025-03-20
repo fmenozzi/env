@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+NOTES_DIR=/home/fed/documents/notes/
+
+files_and_tags=$(grep -r "tags:.*$" "$NOTES_DIR" | sed 's/tags://g' | sed "s|$NOTES_DIR||g")
+selected_file=$(echo "$files_and_tags" | fzf -q "$1" | cut -d ':' -f 1)
+if [ -n "$selected_file" ]; then
+    helix -w "$NOTES_DIR" "$NOTES_DIR/$selected_file"
+fi
