@@ -4,7 +4,6 @@ import argparse
 import csv
 import sqlite3
 import pyutils
-import shutil
 import sys
 from datetime import datetime, timezone
 from html.parser import HTMLParser
@@ -13,15 +12,8 @@ from urllib.request import urlopen, Request
 DB_PATH = '/home/fed/db/links.db'
 SCHEMA_PATH = '/home/fed/db/links_schema.sql'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
-
-# Preset url, title, and description max column widths for common terminal width
-# configurations, used when printing the formatted result table.
-WIDTH_PRESETS = {
-    114: (55, 21, 21),
-    160: (70, 36, 36),
-    205: (90, 49, 49),
-    230: (110, 51, 51),
-}
+BOLD = '\u001b[1m'
+RESET = '\u001b[0m'
 
 def create_or_open_db():
     with open(SCHEMA_PATH, 'r') as schema_file:
@@ -57,31 +49,10 @@ def now_utc():
     return datetime.strftime(datetime.now(timezone.utc), '%Y-%m-%d %H:%M:%S')
 
 def print_result_table(rows):
-    terminal_width = shutil.get_terminal_size().columns
-    for terminal_preset_width in sorted(WIDTH_PRESETS.keys()):
-        if terminal_width <= terminal_preset_width:
-            preset = WIDTH_PRESETS[terminal_preset_width]
-            break
-    MAX_URL_WIDTH, MAX_TITLE_WIDTH, MAX_DESC_WIDTH = preset
-    def cell(cell_text, max_width):
-        if len(cell_text) <= max_width:
-            return cell_text
-        else:
-            return cell_text[:max_width-3] + '...'
-    fill_dashes_url = '─' * (MAX_URL_WIDTH + 2)
-    fill_dashes_title = '─' * (MAX_TITLE_WIDTH + 2)
-    fill_dashes_desc = '─' * (MAX_DESC_WIDTH + 2)
-    print(f'┌──────┬' + fill_dashes_url + '┬' + fill_dashes_title + '┬' + fill_dashes_desc + '┐')
-    print(f'│  ID  │ {"URL":^{MAX_URL_WIDTH}} │ {"Title":^{MAX_TITLE_WIDTH}} │ {"Description":^{MAX_DESC_WIDTH}} │')
-    print(f'├──────┼' + fill_dashes_url + '┼' + fill_dashes_title + '┼' + fill_dashes_desc + '┤')
     for idx, row in enumerate(rows):
         id, url, title, desc, _, _= row
-        url, title, desc = (cell(url, MAX_URL_WIDTH), cell(title, MAX_TITLE_WIDTH), cell(desc, MAX_DESC_WIDTH))
-        print(f'│ {id:^4} │ {url:{MAX_URL_WIDTH}} │ {title:{MAX_TITLE_WIDTH}} │ {desc:{MAX_DESC_WIDTH}} │')
-        if idx == len(rows) - 1:
-            print(f'└──────┴' + fill_dashes_url + '┴' + fill_dashes_title + '┴' + fill_dashes_desc + '┘')
-        else:
-            print(f'├──────┼' + fill_dashes_url + '┼' + fill_dashes_title + '┼' + fill_dashes_desc + '┤')
+        print(f'{id}: {BOLD}{desc}{RESET}')
+        print(f'└─── {url}')
 
 def get_title_from_url(url):
     request = Request(url, headers={'User-Agent': USER_AGENT})
