@@ -2,10 +2,11 @@
 
 set -eo pipefail
 
-# These mime types will be opened via xdg-open instead of vim.
+# These mime types will be opened via xdg-open instead of the text editor.
 #
 # TODO: ideally we would detect if there's a program to open a file of a certain
-#       mime type and just use that and only afterwards fall back to vim
+#       mime type and just use that and only afterwards fall back to the text
+#       editor.
 XDG_OPEN_MIME_TYPES=(
     'application/pdf'
     'application/xhtml+xml'
@@ -28,6 +29,8 @@ XDG_OPEN_MIME_TYPES=(
     'video/mp4'
     'video/webm'
 )
+
+EDITOR="helix"
 
 while getopts "hg" opt; do
     case $opt in
@@ -97,8 +100,8 @@ else
     # If not an xdg-open mime type, just open in vim by default. Open at given
     # line number if applicable.
     if [ -v LINE_NUM ]; then
-        nvim "+$LINE_NUM" "$OPEN_PATH"
+        "$EDITOR" "+$LINE_NUM" "$OPEN_PATH"
     else
-        nvim "$OPEN_PATH"
+        "$EDITOR" "$OPEN_PATH"
     fi
 fi
