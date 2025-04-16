@@ -40,6 +40,7 @@ X = "select_line_above"
 "A-." = "goto_next_buffer"
 "A-/" = "repeat_last_motion"
 "A-w" = ":buffer-close"
+"G" = "goto_last_line"
 [keys.select]
 A-x = "extend_to_line_bounds"
 X = "select_line_above"
