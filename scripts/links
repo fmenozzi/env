@@ -54,6 +54,12 @@ def print_result_table(rows):
         print(f'{id}: {BOLD}{desc}{RESET}')
         print(f'└─── {url}')
 
+def print_tag_query_result_table(rows):
+    for idx, row in enumerate(rows):
+        id, url, tags = row
+        print(f'{id}: {BOLD}{url}{RESET}')
+        print(f'└─── {tags}')
+
 def get_title_from_url(url):
     request = Request(url, headers={'User-Agent': USER_AGENT})
     try:
@@ -237,9 +243,7 @@ def list_tags(args):
         res = cur.execute("SELECT rowid, url, tags FROM links_fts WHERE tags MATCH ?", (match,))
         rows = res.fetchall()
         con.close()
-        # TODO: print nice table like for find
-        for row in rows:
-            print(row)
+        print_tag_query_result_table(rows)
         return
     if args.histogram:
         tags = {}
