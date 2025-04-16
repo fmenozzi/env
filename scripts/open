@@ -9,6 +9,9 @@ set -eo pipefail
 XDG_OPEN_MIME_TYPES=(
     'application/pdf'
     'application/xhtml+xml'
+    'application/vnd.oasis.opendocument.text'
+    'application/vnd.oasis.opendocument.spreadsheet'
+    'application/vnd.oasis.opendocument.presentation'
     'text/html'
     'image/jpeg'
     'image/png'
