@@ -36,6 +36,7 @@ BACKUP_INCLUDE=(
 
 BACKUP_EXCLUDE=(
     /home/fed/env/dotfiles/nvim/plugged/
+    /home/fed/syncthing/maureen_shared/
     /home/fed/.local/share/Steam/
     /home/fed/.local/share/Trash
     /home/fed/.local/share/TelegramDesktop
