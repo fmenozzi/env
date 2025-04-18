@@ -25,22 +25,44 @@ mode.select = "SELECT"
 [editor.smart-tab]
 enable = false
 
-# jj instead of Esc to enter normal mode.
 [keys.insert]
+# jj instead of Esc to enter normal mode.
 j = { j = "normal_mode" }
 
-# Use Shift-x to unselect lines (or select upwards).
-# Use Alt-, and Alt-. to navigate buffers. Rebind repeat_last_motion, since
-# Alt-. defaults to that action.
-# Alt-w to close current buffer.
 [keys.normal]
+# Shift-x to unselect lines (or select upwards). Rebind extend_to_line_bounds,
+# since Shift-x defaults to that action.
 A-x = "extend_to_line_bounds"
 X = "select_line_above"
+
+# Alt-, and Alt-. to navigate buffers. Rebind repeat_last_motion, since
+# Alt-. defaults to that action.
+# Alt-w to close current buffer.
 "A-," = "goto_previous_buffer"
 "A-." = "goto_next_buffer"
 "A-/" = "repeat_last_motion"
 "A-w" = ":buffer-close"
+
+# Some vim holdovers.
 "G" = "goto_last_line"
+"$" = "goto_line_end"
+"^" = "goto_line_start"
+
+# Shift-y to yank the current line. Technically it's possible to map this to yy
+# but then we run into the issue of being unable to just use y to yank the
+# current selection, so we do this as a compromise (still easier than xy tbh).
+# Has the added benefit of working as expected for multiple Y's (i.e. if you
+# press Shift-y-y, it yanks the current line and the line underneath).
+"Y" = ["select_line_below", "yank"]
+
 [keys.select]
+# Use Shift-x to unselect lines (or select upwards). Rebind extend_to_line_bounds,
+# since Shift-x defaults to that action.
 A-x = "extend_to_line_bounds"
 X = "select_line_above"
+
+# $ in selection mode will yank from the cursor to the end of the line. Note
+# that we first collapse any current selection, such as by using w to move and
+# select words, in order to make sure that it yanks everything from the cursor
+# onwards without skipping anything currently selected.
+"$" = ["collapse_selection", "goto_line_end_newline", "yank"]
