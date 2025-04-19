@@ -37,6 +37,7 @@ alias llm='ollama run'
 alias mon='btm'
 alias wiki='nvim +WikiIndex'
 alias hx='helix'
+alias h='helix'
 
 # Extract from various archive types
 extract() {
