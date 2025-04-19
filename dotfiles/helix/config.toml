@@ -55,6 +55,12 @@ X = "select_line_above"
 # press Shift-y-y, it yanks the current line and the line underneath).
 "Y" = ["select_line_below", "yank"]
 
+# Shift-d to delete the current line. Much like the Shift-y map above, we do
+# this to replace vim's dd. Also allows multiple D's in a similar fashion,
+# though only the last line will be added to the clipboard so the regular x + d
+# mapping is better for cutting and pasting.
+"D" = ["select_line_below", "delete_selection"]
+
 [keys.select]
 # Use Shift-x to unselect lines (or select upwards). Rebind extend_to_line_bounds,
 # since Shift-x defaults to that action.
