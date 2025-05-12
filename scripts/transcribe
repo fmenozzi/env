@@ -29,4 +29,4 @@ ffmpeg -i "$input_audio_file_path" -ar 16000 -ac 1 -c:a pcm_s16le "$wav_audio_fi
 
 # Run whisper.cpp on converted WAV file and output transcription text.
 # TODO: whisper.cpp automatically adds .txt extension, possible to change that?
-whisper.cpp -t 8 -m "$WHISPER_MODEL" -f "$wav_audio_file_path" --output-txt -of "$output_transcription_file_path"
+/home/fed/.bin/whisper-cli -m "$WHISPER_MODEL" -f "$wav_audio_file_path" --output-txt -of "$output_transcription_file_path"
