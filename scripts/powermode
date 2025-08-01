@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+DATE=$(date)
+
+if [ "$#" -ne 1 ]; then
+    echo "powermode: $DATE: usage: powermode <plugged|unplugged>" | systemd-cat
+    exit 1
+fi
+
+mode="$1"
+case "$mode" in
+    plugged)
+        echo "powermode: $DATE: setting power profile to 'performance'" | systemd-cat
+        powerprofilesctl set performance
+        ;;
+    unplugged)
+        echo "powermode: $DATE: setting power profile to 'power-saver'" | systemd-cat
+        powerprofilesctl set power-saver
+        ;;
+    *)
+        echo "powermode: $DATE: invalid powermode option: $mode" | systemd-cat
+        exit 1
+esac

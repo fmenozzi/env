@@ -1,0 +1,1 @@
+SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_ONLINE}=="1", ENV{POWER_SUPPLY_TYPE}=="Mains", RUN+="/home/fed/env/scripts/powermode plugged"
