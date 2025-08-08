@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ "$#" -ne 2 ]; then
+  echo "usage: llm <model> <prompt>"
+  exit 1
+fi
+
+model="$1"
+prompt="$2"
+
+# We use the --dry-run option here so that we don't create a file if the
+# `ollama run` command below fails for some reason (e.g. model not found). This
+# basically reserves a temporary filename; the actual creation/write happens as
+# part of the `tee` command.
+outfile="$(mktemp --dry-run -t "llm.XXXXXXXX.$(date --iso-8601=seconds)")"
+
+echo "output will be written to $outfile"
+ollama run "$model" "$prompt" | tee "$outfile"
+echo "output written to $outfile"
