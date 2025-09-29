@@ -11,7 +11,10 @@ parser.add_argument('directory', nargs='?', help='wallpaper directory')
 args = parser.parse_args()
 
 start = args.directory if args.directory else DEFAULT_WALLPAPER_DIR
-files = [f.path for f in os.scandir(start) if f.is_file()]
-wallpaper = random.choice(files)
+choices = []
+for root, dirs, files in os.walk(start):
+    for file in files:
+        choices.append(os.path.join(root, file))
+wallpaper = random.choice(choices)
 
 os.system(f'gsettings set org.gnome.desktop.background picture-uri-dark file://{wallpaper}')
