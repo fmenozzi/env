@@ -1,0 +1,6 @@
+# See https://sw.kovidgoyal.net/kitty/overview/#startup-sessions
+
+layout splits
+launch btm
+launch --location=vsplit nvtop
+os_window_state fullscreen
