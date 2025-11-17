@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-REPO_LOCAL=/mnt/ava-raid/backups/automatic/home
+REPO_LOCAL=/mnt/ava-raid/backups/automatic/ava/home
 REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/home"
 
 while getopts "hdl" opt; do

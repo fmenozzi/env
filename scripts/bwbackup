@@ -5,7 +5,7 @@ set -euo pipefail
 source "$BASH_PATH/bitwarden.bash"
 
 RESTIC_PASSWORD="$(pass ava/RESTIC_PASSWORD)"
-REPO_LOCAL=/mnt/ava-raid/backups/automatic/bw
+REPO_LOCAL=/mnt/ava-raid/backups/automatic/ava/bw
 REPO_REMOTE="sftp:$(pass ava/REMOTE_BACKUP_HOST):backups/automatic/ava/bw"
 
 export RESTIC_PASSWORD
