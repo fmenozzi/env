@@ -42,7 +42,7 @@ export GIT_PS1_SHOWSTASHSTATE=1
 export GIT_PS1_SHOWUNTRACKEDFILES=1
 # '\W' adds the name of the current directory
 # '\$(__git_ps1)' adds git-related stuff
-export BASE_PROMPT="\[$bldblu\]$(whoami)\[$bldwht\]@\[$bldylw\]$HOSTNAME\[$bldwht\] \W\[$bldgrn\]\$(__git_ps1)\[$bldblu\] ❯ \[$txtrst\]"
+export BASE_PROMPT="\[$bldblu\]$(whoami)\[$bldwht\]@\[$bldylw\]$HOSTNAME\[$bldwht\] \W\[$bldgrn\]\$(__git_ps1)\[$bldblu\] -> \[$txtrst\]"
 export INCOGNITO_PROMPT="\[$bldred\](INCOGNITO) $BASE_PROMPT"
 export PS1="$BASE_PROMPT"
 
