@@ -12,8 +12,8 @@ fi
 mode="$1"
 case "$mode" in
     plugged)
-        echo "powermode: $DATE: setting power profile to 'performance'" | systemd-cat
-        powerprofilesctl set performance
+        echo "powermode: $DATE: setting power profile to 'balanced'" | systemd-cat
+        powerprofilesctl set balanced
         ;;
     unplugged)
         echo "powermode: $DATE: setting power profile to 'power-saver'" | systemd-cat
