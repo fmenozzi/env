@@ -37,6 +37,7 @@ alias mon='btm'
 alias wiki='nvim +WikiIndex'
 alias hx='helix'
 alias h='helix'
+alias cdtmp='cd $(mktemp -d)'
 
 # Extract from various archive types
 extract() {
