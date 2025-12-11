@@ -50,9 +50,10 @@ def now_utc():
 
 def print_result_table(rows):
     for idx, row in enumerate(rows):
-        id, url, title, desc, _, _= row
+        id, url, title, desc, tags, _= row
         print(f'{id}: {BOLD}{desc}{RESET}')
         print(f'└─── {url}')
+        print(f'└─── {tags}')
 
 def print_tag_query_result_table(rows):
     for idx, row in enumerate(rows):
