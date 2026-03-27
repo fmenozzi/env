@@ -32,6 +32,7 @@ BACKUP_INCLUDE=(
     /home/fed/.python_history
     /home/fed/.ssh/
     /home/fed/.sqlite_history
+    /home/fed/.thunderbird
 )
 
 BACKUP_EXCLUDE=(
